@@ -1,0 +1,23 @@
+{
+  "name": "com.failcake.db.sdk",
+  "displayName": "Delivery & Beyond SDK",
+  "version": "1.0.0",
+  "unity": "6000.0",
+  "description": "Game SDK to import custom maps",
+  "type": "library",
+  "keywords": [
+    "3d",
+    "delivery&beyond",
+    "SDK",
+    "Modding",
+    "importer"
+  ],
+  "author": {
+    "name": "FailCake",
+    "url": "https://github.com/edunad/delivery-beyond-sdk"
+  },
+  "dependencies": {
+	  "com.failcake.vis.occlusion": "1.0.0",
+	  "com.failcake.vmf.importer": "1.0.0"
+  }
+}

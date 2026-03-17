@@ -1,0 +1,21 @@
+{
+    "name": "HyenaQuest.SDK",
+    "rootNamespace": "",
+    "references": [
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:9b261077c7a2ac34886513ec1345f8e0",
+        "GUID:cc235d236a8b0fa4385ec891c3af101a",
+        "GUID:ba9c0483eb0d1404292840cad5a84702"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
