@@ -159,8 +159,8 @@ namespace HyenaQuest
     [Preserve, Serializable, CreateAssetMenu(menuName = "HyenaQuest/World Settings")]
     public class WorldSettings : ScriptableObject
     {
-        [Range(0, byte.MaxValue)]
-        public byte index = byte.MaxValue;
+        [Required]
+        public string uniqueName;
 
         [LayoutStart("Settings", ELayout.Background | ELayout.TitleOut), Range(1, byte.MaxValue)]
         public int minRounds = 1;
