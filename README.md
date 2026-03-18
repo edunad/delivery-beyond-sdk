@@ -17,4 +17,7 @@
 > IF YOU DECIDE TO USE HAMMER, THIS ONLY WORKS WITH [HAMMER++](https://ficool2.github.io/HammerPlusPlus-Website/). Regular Hammer isn't supported.
 
 ## Installation
+```
+https://github.com/edunad/delivery-beyond-sdk.git?path=/com.failcake.db.sdk
+```
 
