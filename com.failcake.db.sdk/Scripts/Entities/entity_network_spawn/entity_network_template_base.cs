@@ -25,6 +25,8 @@ namespace HyenaQuest
         #if UNITY_EDITOR
         private MeshFilter _filter;
         private SkinnedMeshRenderer _skinnedFilter;
+        
+        private entity_sdk_phys_scrap _scrapSDK;
         #endif
 
         #endregion
@@ -43,10 +45,12 @@ namespace HyenaQuest
             if (!this.IsServer) return (null, null);
             if (!this.template) throw new UnityException("No templates assigned to entity_network_template!");
 
+            if (SDK_SETUP.PreNetworkTemplateSpawn != null) this.template = SDK_SETUP.PreNetworkTemplateSpawn?.Invoke(this.template);
+
             GameObject newObj = entity_network_template_base.Instantiate(this.template, this.transform.position, this.transform.rotation);
             if (!newObj) throw new UnityException($"Failed to instantiate template {this.template.name}");
 
-            GameObject newTemplate = SDK_SETUP.NetworkObjectProxy?.Invoke(newObj);
+            GameObject newTemplate = SDK_SETUP.PostNetworkTemplateSpawn?.Invoke(newObj);
             if (!newTemplate) throw new UnityException("Invalid proxy template");
 
             // TEMP ----------------
@@ -85,34 +89,47 @@ namespace HyenaQuest
             Mesh meshToDraw = null;
             Transform meshTransform = null;
 
-            this._filter = preview.GetComponent<MeshFilter>();
-            if (!this._filter) this._filter = preview.GetComponentInChildren<MeshFilter>(true);
+            if (this.template.name.StartsWith("SDK-entity_scrap"))
+            {
+                if (!this._scrapSDK) this._scrapSDK = preview.GetComponent<entity_sdk_phys_scrap>();
+                if (this._scrapSDK)
+                {
+                    meshToDraw = this._scrapSDK.preview;
+                    meshTransform = this._scrapSDK.transform;
+                }
+            }
+            else
+            {
+                if (!this._filter) this._filter = preview.GetComponent<MeshFilter>();
+                if (!this._filter) this._filter = preview.GetComponentInChildren<MeshFilter>(true);
 
-            if (!this._filter)
-            {
-                this._skinnedFilter = preview.GetComponent<SkinnedMeshRenderer>();
-                if (!this._skinnedFilter) this._skinnedFilter = preview.GetComponentInChildren<SkinnedMeshRenderer>(true);
-                if (!this._skinnedFilter) return;
-            }
+                if (!this._filter)
+                {
+                    if (!this._skinnedFilter) this._skinnedFilter = preview.GetComponent<SkinnedMeshRenderer>();
+                    if (!this._skinnedFilter) this._skinnedFilter = preview.GetComponentInChildren<SkinnedMeshRenderer>(true);
+                    if (!this._skinnedFilter) return;
+                }
 
-            if (!this._filter && !this._skinnedFilter)
-            {
-                MeshCollider cl = preview.GetComponentInChildren<MeshCollider>(true);
-                if (!cl) return;
-                meshToDraw = cl.sharedMesh;
-                meshTransform = cl.transform;
+                if (!this._filter && !this._skinnedFilter)
+                {
+                    MeshCollider cl = preview.GetComponentInChildren<MeshCollider>(true);
+                    if (!cl) return;
+                    
+                    meshToDraw = cl.sharedMesh;
+                    meshTransform = cl.transform;
+                }
+                else if (this._filter)
+                {
+                    meshToDraw = this._filter.sharedMesh;
+                    meshTransform = this._filter.transform;
+                }
+                else if (this._skinnedFilter)
+                {
+                    meshToDraw = this._skinnedFilter.sharedMesh;
+                    meshTransform = this._skinnedFilter.transform;
+                }
             }
-            else if (this._filter)
-            {
-                meshToDraw = this._filter.sharedMesh;
-                meshTransform = this._filter.transform;
-            }
-            else if (this._skinnedFilter)
-            {
-                meshToDraw = this._skinnedFilter.sharedMesh;
-                meshTransform = this._skinnedFilter.transform;
-            }
-
+            
             if (!meshToDraw || !meshTransform) return;
 
             Vector3 scale = Vector3.Scale(this.transform.lossyScale, this.template.transform.lossyScale);

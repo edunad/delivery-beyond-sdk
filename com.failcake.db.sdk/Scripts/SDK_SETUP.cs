@@ -17,13 +17,19 @@ namespace HyenaQuest
         private static void InitializeOnLoad() {
             SDK_SETUP.GetCurrentRound = null;
             
-            SDK_SETUP.NetworkObjectProxy = null;
+            SDK_SETUP.PreNetworkTemplateSpawn = null;
+            SDK_SETUP.PostNetworkTemplateSpawn = null;
             
             SDK_SETUP.GetSeed = null;
             SDK_SETUP.OnRoomSpawn = null;
             
             SDK_SETUP.OnDeliverySpotRegister = null;
             SDK_SETUP.OnDeliverySpotUnregister = null;
+            
+            SDK_SETUP.Play3DSound = null;
+            SDK_SETUP.Play3DSoundClip = null;
+            SDK_SETUP.Play2DSoundClip = null;
+            SDK_SETUP.Play2DSound = null;
         }
         #endif
 
@@ -34,12 +40,20 @@ namespace HyenaQuest
         // ---------------------------
         
         // SDKProxyController ---
-        public static Func<GameObject, GameObject> NetworkObjectProxy;
+        public static Func<GameObject, GameObject> PreNetworkTemplateSpawn;
+        public static Func<GameObject, GameObject> PostNetworkTemplateSpawn;
         // ---------------------------
         
         // MapController ---
         public static Func<int> GetSeed;
         public static Action<entity_room_base> OnRoomSpawn;
+        // ---------------------------
+        
+        // SoundController ---
+        public static Action<string, Vector3, AudioData, bool> Play3DSound;
+        public static Action<AudioClip, Vector3, AudioData, bool> Play3DSoundClip;
+        public static Action<AudioClip, AudioData, bool> Play2DSoundClip;
+        public static Action<string, AudioData, bool> Play2DSound;
         // ---------------------------
         
         // DeliveryController ---
