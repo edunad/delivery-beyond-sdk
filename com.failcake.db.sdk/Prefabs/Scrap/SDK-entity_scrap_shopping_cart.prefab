@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7303692167396468595
+--- !u!1 &1159421369440482858
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,40 +8,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3138984564804170557}
-  - component: {fileID: 2169991435892139193}
+  - component: {fileID: 6263245066413702086}
+  - component: {fileID: 310038533430366882}
   m_Layer: 0
-  m_Name: SDK-prop_scrap_clothes_2
+  m_Name: SDK-entity_scrap_shopping_cart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
---- !u!4 &3138984564804170557
+--- !u!4 &6263245066413702086
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7303692167396468595}
+  m_GameObject: {fileID: 1159421369440482858}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.04030001, y: -0.53781, z: -0.43677902}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2169991435892139193
+--- !u!114 &310038533430366882
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7303692167396468595}
+  m_GameObject: {fileID: 1159421369440482858}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6aa765fd60e143b98fba77fcfef35425, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HyenaQuest.SDK::HyenaQuest.entity_sdk_phys_scrap
-  preview: {fileID: 4300000, guid: 09f2dd5e1fc431240ad238ff652d192e, type: 2}
+  preview: {fileID: 4300000, guid: 6810c23de77a6cb41962708ca2fdf7bd, type: 2}

@@ -26,6 +26,7 @@ namespace HyenaQuest
             SDK_SETUP.OnDeliverySpotRegister = null;
             SDK_SETUP.OnDeliverySpotUnregister = null;
             
+            
             SDK_SETUP.Play3DSound = null;
             SDK_SETUP.Play3DSoundClip = null;
             SDK_SETUP.Play2DSoundClip = null;
@@ -39,7 +40,7 @@ namespace HyenaQuest
         public static Func<byte> GetCurrentRound;
         // ---------------------------
         
-        // SDKProxyController ---
+        // entity_network_template_base ---
         public static Func<GameObject, GameObject> PreNetworkTemplateSpawn;
         public static Func<GameObject, GameObject> PostNetworkTemplateSpawn;
         // ---------------------------

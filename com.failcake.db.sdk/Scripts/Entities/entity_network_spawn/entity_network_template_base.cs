@@ -91,7 +91,7 @@ namespace HyenaQuest
 
             if (this.template.name.StartsWith("SDK-entity_scrap"))
             {
-                if (!this._scrapSDK) this._scrapSDK = preview.GetComponent<entity_sdk_phys_scrap>();
+                this._scrapSDK = preview.GetComponent<entity_sdk_phys_scrap>();
                 if (this._scrapSDK)
                 {
                     meshToDraw = this._scrapSDK.preview;
@@ -100,12 +100,12 @@ namespace HyenaQuest
             }
             else
             {
-                if (!this._filter) this._filter = preview.GetComponent<MeshFilter>();
+                this._filter = preview.GetComponent<MeshFilter>();
                 if (!this._filter) this._filter = preview.GetComponentInChildren<MeshFilter>(true);
 
                 if (!this._filter)
                 {
-                    if (!this._skinnedFilter) this._skinnedFilter = preview.GetComponent<SkinnedMeshRenderer>();
+                    this._skinnedFilter = preview.GetComponent<SkinnedMeshRenderer>();
                     if (!this._skinnedFilter) this._skinnedFilter = preview.GetComponentInChildren<SkinnedMeshRenderer>(true);
                     if (!this._skinnedFilter) return;
                 }

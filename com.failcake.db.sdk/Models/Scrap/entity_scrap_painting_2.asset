@@ -17,8 +17,8 @@ Mesh:
     firstVertex: 0
     vertexCount: 8
     localAABB:
-      m_Center: {x: 0.017, y: 0, z: 0}
-      m_Extent: {x: 0.017, y: 0.238, z: 0.238}
+      m_Center: {x: 0.015, y: 0, z: 0}
+      m_Extent: {x: 0.015, y: 0.24, z: 0.24}
   m_Shapes:
     vertices: []
     shapes: []
@@ -35,7 +35,7 @@ Mesh:
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
-  m_IndexBuffer: 000001000200030002000100010000000400000002000500020003000500040000000500030001000600010004000600040003000600030004000700040005000700050003000700
+  m_IndexBuffer: 000001000200000002000300020004000300040001000500010000000500030004000500020001000600010004000600040002000600000003000700030005000700050000000700
   m_VertexData:
     serializedVersion: 3
     m_VertexCount: 8
@@ -97,7 +97,7 @@ Mesh:
       format: 0
       dimension: 0
     m_DataSize: 192
-    _typelessdata: 0000000046b6733e46b673be92ac7fbf7919123d791912bd0000000046b673be46b673be20ee7abf80630fbe80630fbe0000000046b673be46b6733e92ac7fbf791912bd7919123d96430b3d46b673be46b6733e2cb47e3f888b91bd888b913d96430b3d46b6733e46b673be2cb47e3f888b913d888b91bd0000000046b6733e46b6733e20ee7abf80630f3e80630f3e96430b3d46b673be46b673be2cb47e3f888b91bd888b91bd96430b3d46b6733e46b6733e2cb47e3f888b913d888b913d
+    _typelessdata: 000000008fc2753e8fc275be95607fbf95607f3d9560ffbc8fc2f53c8fc2753e8fc275be95607f3f9560ff3c95607fbd000000008fc275be8fc275be64177cbf6417fcbd6417fcbd000000008fc275be8fc2753e95607fbf9560ffbc95607f3d8fc2f53c8fc275be8fc2753e95607f3f95607fbd9560ff3c8fc2f53c8fc2753e8fc2753e64177c3f6417fc3d6417fc3d8fc2f53c8fc275be8fc275be7c017f3f7c017fbd7c017fbd000000008fc2753e8fc2753e7c017fbf7c017f3d7c017f3d
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -151,8 +151,8 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0.017, y: 0, z: 0}
-    m_Extent: {x: 0.017, y: 0.238, z: 0.238}
+    m_Center: {x: 0.015, y: 0, z: 0}
+    m_Extent: {x: 0.015, y: 0.24, z: 0.24}
   m_MeshUsageFlags: 0
   m_CookingOptions: 30
   m_BakedConvexCollisionMesh: 
