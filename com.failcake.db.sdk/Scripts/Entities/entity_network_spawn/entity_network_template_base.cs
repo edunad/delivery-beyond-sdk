@@ -26,7 +26,7 @@ namespace HyenaQuest
         private MeshFilter _filter;
         private SkinnedMeshRenderer _skinnedFilter;
         
-        private entity_sdk_phys_scrap _scrapSDK;
+        private entity_sdk_replacement _scrapSDK;
         #endif
 
         #endregion
@@ -90,7 +90,7 @@ namespace HyenaQuest
 
             if (this.template.name.StartsWith("SDK-entity_scrap"))
             {
-                this._scrapSDK = preview.GetComponent<entity_sdk_phys_scrap>();
+                this._scrapSDK = preview.GetComponent<entity_sdk_replacement>();
                 if (this._scrapSDK)
                 {
                     meshToDraw = this._scrapSDK.preview;
