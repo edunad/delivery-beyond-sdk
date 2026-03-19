@@ -25,6 +25,10 @@ namespace HyenaQuest.nav
 
         public bool effect = true;
 
+        public void Awake() {
+            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
+        }
+        
         #if UNITY_EDITOR
         public void OnValidate() {
             if (Application.isPlaying) return;

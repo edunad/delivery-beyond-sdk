@@ -11,6 +11,10 @@ namespace HyenaQuest.nav
     /// </summary>
     public class entity_sdk_nav_cut : MonoBehaviour
     {
+        public void Awake() {
+            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
+        }
+        
         #if UNITY_EDITOR
         public void OnDrawGizmos() {
             Gizmos.color = Color.red;

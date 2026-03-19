@@ -28,6 +28,9 @@ namespace HyenaQuest
             SDK_SETUP.OnDeliverySpotRegister = null;
             SDK_SETUP.OnDeliverySpotUnregister = null;
             
+            SDK_SETUP.OnKillRequest = null;
+            SDK_SETUP.OnDamageRequest = null;
+            
             SDK_SETUP.Play3DSound = null;
             SDK_SETUP.Play3DSoundClip = null;
             SDK_SETUP.Play2DSoundClip = null;
@@ -50,6 +53,11 @@ namespace HyenaQuest
         public static Action<GameObject> PatchSDKEntity;
         // ---------------------------
         
+        // DAMAGE ---
+        public static Action<DamageType, Collider> OnKillRequest;
+        public static Action<DamageType, byte, float, bool, Collider> OnDamageRequest;
+        // ---------
+            
         // MapController ---
         public static Func<int> GetSeed;
         public static Action<entity_room_base> OnRoomSpawn;
