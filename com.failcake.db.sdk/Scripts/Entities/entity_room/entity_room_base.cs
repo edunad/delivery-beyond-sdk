@@ -260,16 +260,7 @@ namespace HyenaQuest
             return this.GetComponentsInChildren<entity_room_exit>(false).AsValueEnumerable().Where(a => a is not entity_interior_exit)
                 .OrderBy(a => a.order != -1 ? a.order : int.MaxValue).ToArray(); // Cannot be cached since we remove the exits once we are done with them
         }
-
-        public void SetVolumeColor(Color color) {
-            entity_volume_light[] windowVolumes = this.GetComponentsInChildren<entity_volume_light>(true);
-            foreach (entity_volume_light window in windowVolumes)
-            {
-                if (!window) continue;
-                window.SetColor(color);
-            }
-        }
-
+        
         public void SetWindowColor(Color color, float outsideIntensity) {
             entity_window_light[] windows = this.GetComponentsInChildren<entity_window_light>(true);
             foreach (entity_window_light window in windows)
