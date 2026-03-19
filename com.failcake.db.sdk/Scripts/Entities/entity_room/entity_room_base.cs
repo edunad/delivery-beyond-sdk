@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using FailCake.VIS;
 using FailCake.VMF;
-//using Pathfinding;
+
 using SaintsField;
 using SaintsField.Playa;
 using Unity.Netcode;
@@ -41,7 +41,7 @@ namespace HyenaQuest
         public VMFMaterial material;
 
         [MaxValue(16)]
-        public SaintsArray<Texture2D> textures;
+        public List<Texture2D> texture;
     }
 
     [RequireComponent(typeof(NetworkObject))]
@@ -61,11 +61,11 @@ namespace HyenaQuest
         private Bounds _BOUNDS_;
 
         [LayoutStart("Settings", ELayout.Background | ELayout.TitleOut)]
-        public SaintsArray<RoomLayer> roomLayers = new SaintsArray<RoomLayer>();
+        public List<RoomLayer> layers = new List<RoomLayer>();
 
         [SaintsDictionary]
         public SaintsDictionary<VMFLayer, RoomTexture> modifierTextures = new SaintsDictionary<VMFLayer, RoomTexture>();
-
+        
         [Range(0, 100)]
         public int minSpawnRounds;
 
@@ -261,7 +261,7 @@ namespace HyenaQuest
                 .OrderBy(a => a.order != -1 ? a.order : int.MaxValue).ToArray(); // Cannot be cached since we remove the exits once we are done with them
         }
 
-        /*public void SetVolumeColor(Color color) {
+        public void SetVolumeColor(Color color) {
             entity_volume_light[] windowVolumes = this.GetComponentsInChildren<entity_volume_light>(true);
             foreach (entity_volume_light window in windowVolumes)
             {
@@ -286,7 +286,7 @@ namespace HyenaQuest
                 if (!window) continue;
                 window.SetStatus(seed, forceClosed);
             }
-        }*/
+        }
 
         public void SetSkyboxColor(Color color) {
             Renderer[] renderers = this.GetComponentsInChildren<Renderer>(true).AsValueEnumerable().Where(r => r.transform.parent == this.transform).ToArray();
@@ -465,17 +465,17 @@ namespace HyenaQuest
             uint textureData = 0;
 
             // ----------- ROOM LAYER ---------------------
-            if (this.roomLayers is { Count: > 0 })
+            if (this.layers is { Count: > 0 })
             {
                 float totalWeight = 0f;
-                foreach (RoomLayer layer in this.roomLayers)
+                foreach (RoomLayer layer in this.layers)
                     if (layer.round <= currentRound)
                         totalWeight += layer.weight;
 
                 float chance = Random.value * totalWeight;
-                for (int i = 0; i < this.roomLayers.Count; i++)
+                for (int i = 0; i < this.layers.Count; i++)
                 {
-                    RoomLayer layer = this.roomLayers[i];
+                    RoomLayer layer = this.layers[i];
                     if (layer.round > currentRound) continue;
 
                     if (chance < layer.weight)
@@ -500,9 +500,9 @@ namespace HyenaQuest
                 {
                     if (layerIndex >= 16) break;
 
-                    SaintsArray<Texture2D> textures = kvp.Value.textures;
+                    List<Texture2D> tex = kvp.Value.texture;
                     byte selection = 0;
-                    if (textures is { Count: > 0 }) selection = (byte)Random.Range(0, textures.Count);
+                    if (tex is { Count: > 0 }) selection = (byte)Random.Range(0, tex.Count);
 
                     textureData |= (uint)(selection & 0xFF) << (layerIndex * 8);
                     layerIndex++;
@@ -517,11 +517,11 @@ namespace HyenaQuest
         }
 
         protected virtual void CleanUnselectedLayers(byte selectedLayer) {
-            if (this.roomLayers is not { Count: > 0 }) return;
+            if (this.layers is not { Count: > 0 }) return;
 
-            for (int i = 0; i < this.roomLayers.Count; i++)
+            for (int i = 0; i < this.layers.Count; i++)
             {
-                RoomLayer layer = this.roomLayers[i];
+                RoomLayer layer = this.layers[i];
                 if (!layer.layer) continue;
 
                 if (i == selectedLayer)
@@ -558,6 +558,8 @@ namespace HyenaQuest
         protected virtual void ApplyTextureLayer(uint encodedTextures) {
             if (this.modifierTextures is not { Count: > 0 }) return;
 
+            Debug.Log("ApplyTextureLayer");
+            
             Renderer[] renderers = this.GetComponentsInChildren<Renderer>(true)
                 .AsValueEnumerable()
                 .Where(r => r.name == "func_wall_layer" || r.transform.parent == this.transform)
@@ -590,7 +592,7 @@ namespace HyenaQuest
                 if (layerIndex >= 4) break; // Max 4 layers
 
                 VMFLayer layer = kvp.Key;
-                SaintsArray<Texture2D> textures = kvp.Value.textures;
+                List<Texture2D> textures = kvp.Value.texture;
 
                 byte textureIndex = (byte)((encodedTextures >> (layerIndex * 8)) & 0xFF);
                 if (textures is { Count: > 0 } && textureIndex < textures.Count)
