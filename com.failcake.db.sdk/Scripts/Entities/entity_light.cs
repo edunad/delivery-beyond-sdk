@@ -19,14 +19,6 @@ namespace HyenaQuest
         
         public bool on;
         public bool breakable;
-        
-        [LayoutStart("Sounds", ELayout.Background | ELayout.TitleOut)]
-        public List<AudioClip> onSndFX = new List<AudioClip>();
-
-        public List<AudioClip> offSndFX = new List<AudioClip>();
-        public List<AudioClip> flickerSndFX = new List<AudioClip>();
-        public List<AudioClip> breakSndFX = new List<AudioClip>();
-
         #endregion
 
         #region PRIVATE
@@ -106,7 +98,7 @@ namespace HyenaQuest
         [Client]
         public void Break() {
             if (!this.breakable || this._broken) return;
-            SDK_SETUP.Play3DSoundClip?.Invoke(this.breakSndFX[Random.Range(0, this.breakSndFX.Count)], this.transform.position, new AudioData { distance = 3, volume = 0.8F }, false);
+            SDK_SETUP.Play3DSound?.Invoke($"General/Entities/Light/light_break.ogg", this.transform.position, new AudioData { distance = 3, volume = 0.8F }, false);
 
             this._light.intensity = 0;
             this._broken = true;
@@ -125,8 +117,8 @@ namespace HyenaQuest
             this._flickerTimer?.Stop();
             this._flickerTimer = util_timer.Create(Random.Range(2, 8), 0.06F, ticks => {
                 this._light.intensity = Random.Range(0.25F, this._intensity);
-                if (this.flickerSndFX.Count > 0 && ticks % 2 == 0)
-                    SDK_SETUP.Play3DSoundClip?.Invoke(this.flickerSndFX[Random.Range(0, this.flickerSndFX.Count)], this.transform.position, new AudioData { pitch = Random.Range(0.8f, 1.2f), distance = 2, volume = 0.15F }, false);
+                if(ticks % 2 == 0)
+                    SDK_SETUP.Play3DSound?.Invoke($"General/Entities/Light/light_flicker_{Random.Range(0, 3)}.ogg", this.transform.position, new AudioData { pitch = Random.Range(0.8f, 1.2f), distance = 2, volume = 0.15F }, false);
             }, () => {
                 this._light.intensity = this._intensity;
                 if (!stayOn) this.SetLightStatus(false);
@@ -139,20 +131,8 @@ namespace HyenaQuest
         public void SetLightStatus(bool enable, bool skipAudio = false) {
             if (enable == this.on) return;
             this.on = enable;
-
-            if (!skipAudio)
-            {
-                AudioData data = new AudioData { pitch = Random.Range(0.8f, 1.2f), distance = 2, volume = 0.15F };
-
-                if (enable)
-                {
-                    if (this.onSndFX is { Count: > 0 }) SDK_SETUP.Play3DSoundClip?.Invoke(this.onSndFX[Random.Range(0, this.onSndFX.Count)], this.transform.position, data, false);
-                }
-                else
-                {
-                    if (this.offSndFX is { Count: > 0 }) SDK_SETUP.Play3DSoundClip?.Invoke(this.offSndFX[Random.Range(0, this.offSndFX.Count)], this.transform.position, data, false);
-                }
-            }
+            
+            if (!skipAudio) SDK_SETUP.Play3DSound?.Invoke(enable ? "General/Entities/Light/light_on.ogg" : "General/Entities/Light/light_off.ogg", this.transform.position, new AudioData { pitch = Random.Range(0.8f, 1.2f), distance = 2, volume = 0.15F }, false);
         }
 
         private void Update() {
