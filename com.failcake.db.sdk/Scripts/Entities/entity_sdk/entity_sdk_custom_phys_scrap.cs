@@ -45,8 +45,8 @@ namespace HyenaQuest
 
         public void OnValidate() {
             if (Application.isPlaying) return;
-
-            this.name = "entity_sdk_phys_scrap"; // Horrible i know, but its quicker than checking components.
+            
+            if(!this.name.StartsWith("SDK-CUSTOM_SCRAP-")) this.name = $"SDK-CUSTOM_SCRAP-{this.name}";
             this.gameObject.layer = LayerMask.NameToLayer("entity_phys");
 
             // NETWORK --

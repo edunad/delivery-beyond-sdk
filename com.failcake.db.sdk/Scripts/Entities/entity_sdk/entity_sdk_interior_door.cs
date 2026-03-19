@@ -45,7 +45,7 @@ namespace HyenaQuest
         public void OnValidate() {
             if (Application.isPlaying) return;
             
-            this.name = "entity_sdk_interior_door"; // Horrible i know, but its quicker than checking components.
+            if(!this.name.StartsWith("SDK-DOOR-")) this.name = $"SDK-DOOR-{this.name}"; // Horrible i know, but its quicker than checking components.
             this.gameObject.layer = LayerMask.NameToLayer("entity_phys");
 
             // NETWORK --
