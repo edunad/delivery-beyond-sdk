@@ -28,6 +28,9 @@ namespace HyenaQuest
         
         [ShowIf(nameof(UseCustomSounds))]
         public List<AudioClip> collideSounds = new List<AudioClip>();
+        
+        [ShowIf(nameof(UseCustomSounds))]
+        public List<AudioClip> damageSounds = new List<AudioClip>();
 
         #region PRIVATE
         

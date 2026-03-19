@@ -23,9 +23,10 @@ namespace HyenaQuest
             SDK_SETUP.GetSeed = null;
             SDK_SETUP.OnRoomSpawn = null;
             
+            SDK_SETUP.PatchSDKEntity = null;
+            
             SDK_SETUP.OnDeliverySpotRegister = null;
             SDK_SETUP.OnDeliverySpotUnregister = null;
-            
             
             SDK_SETUP.Play3DSound = null;
             SDK_SETUP.Play3DSoundClip = null;
@@ -43,6 +44,10 @@ namespace HyenaQuest
         // entity_network_template_base ---
         public static Func<GameObject, GameObject> PreNetworkTemplateSpawn;
         public static Action<GameObject> PostNetworkTemplateSpawn;
+        // ---------------------------
+        
+        // Other ---
+        public static Action<GameObject> PatchSDKEntity;
         // ---------------------------
         
         // MapController ---
