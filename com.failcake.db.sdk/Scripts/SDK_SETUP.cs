@@ -42,7 +42,7 @@ namespace HyenaQuest
         
         // entity_network_template_base ---
         public static Func<GameObject, GameObject> PreNetworkTemplateSpawn;
-        public static Func<GameObject, GameObject> PostNetworkTemplateSpawn;
+        public static Action<GameObject> PostNetworkTemplateSpawn;
         // ---------------------------
         
         // MapController ---

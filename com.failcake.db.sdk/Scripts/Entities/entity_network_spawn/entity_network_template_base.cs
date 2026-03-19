@@ -50,8 +50,7 @@ namespace HyenaQuest
             GameObject newObj = entity_network_template_base.Instantiate(this.template, this.transform.position, this.transform.rotation);
             if (!newObj) throw new UnityException($"Failed to instantiate template {this.template.name}");
 
-            GameObject newTemplate = SDK_SETUP.PostNetworkTemplateSpawn?.Invoke(newObj);
-            if (!newTemplate) throw new UnityException("Invalid proxy template");
+            SDK_SETUP.PostNetworkTemplateSpawn?.Invoke(newObj);
 
             // TEMP ----------------
             if (this.flipTest)
@@ -64,10 +63,10 @@ namespace HyenaQuest
             }
             // --------------------
 
-            newObj.transform.localScale = Vector3.Scale(this.transform.lossyScale, newTemplate.transform.lossyScale);
+            newObj.transform.localScale = Vector3.Scale(this.transform.lossyScale, newObj.transform.lossyScale);
 
             NetworkObject networkObj = newObj.GetComponent<NetworkObject>();
-            if (!networkObj) throw new UnityException($"NetworkObject component missing on template {newTemplate.name}");
+            if (!networkObj) throw new UnityException($"NetworkObject component missing on template {newObj.name}");
 
             this._spawnedGameObject = networkObj;
             return (newObj, this._spawnedGameObject);
