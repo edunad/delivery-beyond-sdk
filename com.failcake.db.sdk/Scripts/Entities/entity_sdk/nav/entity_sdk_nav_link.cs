@@ -14,7 +14,7 @@ namespace HyenaQuest.nav
     /// </summary>
     public class entity_sdk_nav_link : MonoBehaviour
     {
-        [LayoutStart("Link", ELayout.Background | ELayout.TitleOut), Range(0, 1), Required]
+        [LayoutStart("Link", ELayout.Background | ELayout.TitleOut), Required]
         public Transform target;
 
         [LayoutStart("Settings", ELayout.Background | ELayout.TitleOut), Range(0, 1)]
