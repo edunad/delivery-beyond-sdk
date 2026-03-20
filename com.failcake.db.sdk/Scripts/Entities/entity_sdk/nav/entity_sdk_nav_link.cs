@@ -28,16 +28,16 @@ namespace HyenaQuest.nav
         public void Awake() {
             SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
         }
-        
+
         #if UNITY_EDITOR
         public void OnValidate() {
             if (Application.isPlaying) return;
-            
+
             string newName = "entity_sdk_nav_link";
             if (this.name == newName) return;
             this.name = newName;
         }
-        
+
         public void OnDrawGizmos() {
             Vector3 start = this.transform.position;
 
