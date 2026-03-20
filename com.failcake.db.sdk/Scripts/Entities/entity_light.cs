@@ -117,7 +117,6 @@ namespace HyenaQuest
             this._flickerTimer?.Stop();
             this._flickerTimer = util_timer.Create(Random.Range(2, 8), 0.06F, ticks => {
                 this._light.intensity = Random.Range(0.25F, this._intensity);
-                if (ticks % 2 == 0) SDK_SETUP.Play3DSound?.Invoke($"General/Entities/Light/light_flicker_{Random.Range(0, 3)}.ogg", this.transform.position, new AudioData { pitch = Random.Range(0.8f, 1.2f), distance = 2, volume = 0.15F }, false);
             }, () => {
                 this._light.intensity = this._intensity;
                 if (!stayOn) this.SetLightStatus(false);
