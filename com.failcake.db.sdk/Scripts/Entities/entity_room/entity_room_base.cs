@@ -169,31 +169,6 @@ namespace HyenaQuest
         #endregion
 
         #endregion
-
-        public void Awake() {
-            this._VISRoom = this.GetComponent<entity_vis_room>();
-            if (!this._VISRoom) return;
-
-            // SETUP ----
-            this._VISRoom.IsInside = point => this._BOUNDS_.Contains(point);
-            this._VISRoom.OnVisibilityChanged = active => {
-                this._isVIS = active;
-
-                if (this._renderers != null)
-                    foreach (Renderer r in this._renderers)
-                        if (r)
-                            r.enabled = active;
-
-                if (this._decals != null)
-                    foreach (DecalProjector d in this._decals)
-                        if (d)
-                            d.enabled = active;
-
-                if (active) this._lightTick = Time.time; // Force light check
-            };
-            // -----------
-        }
-
         public void Update() {
             if (!Camera.main) return;
 
@@ -210,7 +185,31 @@ namespace HyenaQuest
         public override void OnNetworkSpawn() {
             base.OnNetworkSpawn();
             
+            // SETUP -----
             this._BOUNDS_ = util_bounds.GetWorldBounds(this._BOUNDS_, this.transform); // Update bounds
+            
+            this._VISRoom = this.GetComponent<entity_vis_room>();
+            if (this._VISRoom)
+            {
+                this._VISRoom.IsInside = point => this._BOUNDS_.Contains(point);
+                this._VISRoom.OnVisibilityChanged = active => {
+                    this._isVIS = active;
+
+                    if (this._renderers != null)
+                        foreach (Renderer r in this._renderers)
+                            if (r)
+                                r.enabled = active;
+
+                    if (this._decals != null)
+                        foreach (DecalProjector d in this._decals)
+                            if (d)
+                                d.enabled = active;
+
+                    if (active) this._lightTick = Time.time; // Force light check
+                };
+            }
+            // -----------
+            
             if (!this.IsServer) return;
             this.PickLayerData();
         }
@@ -507,7 +506,7 @@ namespace HyenaQuest
             }
             // -----------
 
-            this._combinedLayerData.Value = ((ulong)textureData << 8) | selectedLayer;
+            this._combinedLayerData.SetSpawnValue(((ulong)textureData << 8) | selectedLayer);
             this.ApplyLayerData(this._combinedLayerData.Value);
         }
 
@@ -553,15 +552,17 @@ namespace HyenaQuest
         protected virtual void ApplyTextureLayer(uint encodedTextures) {
             if (this.modifierTextures is not { Count: > 0 }) return;
 
-            Debug.Log("ApplyTextureLayer");
-            
             Renderer[] renderers = this.GetComponentsInChildren<Renderer>(true)
                 .AsValueEnumerable()
                 .Where(r => r.name == "func_wall_layer" || r.transform.parent == this.transform)
                 .ToArray();
 
             VMFLayerMaterial[] vmfMaterials = this.GetComponentsInChildren<VMFLayerMaterial>(true);
-            if (renderers.Length == 0 && vmfMaterials.Length == 0) return;
+            if (renderers.Length == 0 && vmfMaterials.Length == 0)
+            {
+                Debug.LogWarning("No VMF layer materials found, but have modifierTextures set!");
+                return;
+            }
 
             Shader shaderSingle = Shader.Find("FailCake/VMF/VMFLitLayer");
             if (!shaderSingle) throw new UnityException("Shader 'FailCake/VMF/VMFLitLayer' not found!");
@@ -571,12 +572,14 @@ namespace HyenaQuest
             {
                 if (!r) continue;
 
+                Debug.Log(r.name);
+                
                 foreach (Material mat in r.materials)
-                    if (mat && mat.shader == shaderSingle &&
+                    if (mat && string.Equals(mat.shader.name, shaderSingle.name, StringComparison.InvariantCultureIgnoreCase) &&
                         mat.HasTexture(entity_room_base.MainTexture) && mat.HasFloat(entity_room_base.Layer))
                         validMaterials.Add(mat);
             }
-
+            
             Dictionary<VMFLayer, IGrouping<VMFLayer, VMFLayerMaterial>> vmfMaterialsByLayer = vmfMaterials.AsValueEnumerable()
                 .Where(v => v)
                 .GroupBy(v => v.layer).ToDictionary(g => g.Key, g => g);
