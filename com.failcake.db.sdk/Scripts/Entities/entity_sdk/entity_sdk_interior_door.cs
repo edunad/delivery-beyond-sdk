@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using SaintsField;
 using SaintsField.Playa;
 using Unity.Netcode;
 using Unity.Netcode.Components;
@@ -17,6 +18,7 @@ namespace HyenaQuest
     [DisallowMultipleComponent, RequireComponent(typeof(NetworkObject), typeof(NetworkTransform)), RequireComponent(typeof(NetworkRigidbody), typeof(Rigidbody))]
     public class entity_sdk_interior_door : NetworkBehaviour
     {
+        [InfoBox("This entity template should be placed inside a entity_network_spawn")]
         [LayoutStart("Door"), LayoutStart("Door/Layers", ELayout.Background | ELayout.TitleOut)]
         public List<GameObject> layers = new List<GameObject>();
 
@@ -39,7 +41,7 @@ namespace HyenaQuest
         #endregion
 
         public void Awake() {
-            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
+            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject); // Run it for clients
         }
 
         #region PRIVATE

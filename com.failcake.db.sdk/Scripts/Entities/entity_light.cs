@@ -129,14 +129,12 @@ namespace HyenaQuest
         public void SetLightStatus(bool enable, bool skipAudio = false) {
             if (enable == this.on) return;
             this.on = enable;
-
+            
+            if (this._led) this._led.SetActive(this.on);
+            if (this._light) this._light.enabled = this.on;
+            
             if (!skipAudio)
                 SDK_SETUP.Play3DSound?.Invoke(enable ? "General/Entities/Light/light_on.ogg" : "General/Entities/Light/light_off.ogg", this.transform.position, new AudioData { pitch = Random.Range(0.8f, 1.2f), distance = 2, volume = 0.15F }, false);
-        }
-
-        private void Update() {
-            if (!this._light || this._light.enabled == this.on) return;
-            if (this._led) this._led.SetActive(this.on);
         }
 
         [Client]

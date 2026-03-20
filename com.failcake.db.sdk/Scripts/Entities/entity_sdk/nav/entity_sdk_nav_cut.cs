@@ -4,7 +4,7 @@ using UnityEngine;
 
 #endregion
 
-namespace HyenaQuest.nav
+namespace HyenaQuest
 {
     /// <summary>
     ///     Mimics A* Pathfinding project NavmeshCut

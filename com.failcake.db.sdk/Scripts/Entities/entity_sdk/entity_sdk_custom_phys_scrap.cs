@@ -19,6 +19,7 @@ namespace HyenaQuest
     [DisallowMultipleComponent, RequireComponent(typeof(NetworkObject), typeof(NetworkTransform)), RequireComponent(typeof(NetworkRigidbody), typeof(Rigidbody))]
     public class entity_sdk_custom_phys_scrap : NetworkBehaviour
     {
+        [InfoBox("This entity template should be placed inside a entity_network_spawn")]
         [LayoutStart("Sounds", ELayout.Background | ELayout.TitleOut)]
         public SoundTypes collisionMaterial = SoundTypes.CUSTOM;
 
@@ -40,7 +41,6 @@ namespace HyenaQuest
         public void Awake() {
             SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
         }
-
         
         #region PRIVATE
         #if UNITY_EDITOR

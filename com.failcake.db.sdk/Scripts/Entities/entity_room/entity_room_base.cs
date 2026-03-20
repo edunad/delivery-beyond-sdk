@@ -571,9 +571,6 @@ namespace HyenaQuest
             foreach (Renderer r in renderers)
             {
                 if (!r) continue;
-
-                Debug.Log(r.name);
-                
                 foreach (Material mat in r.materials)
                     if (mat && string.Equals(mat.shader.name, shaderSingle.name, StringComparison.InvariantCultureIgnoreCase) &&
                         mat.HasTexture(entity_room_base.MainTexture) && mat.HasFloat(entity_room_base.Layer))

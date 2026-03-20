@@ -4,7 +4,7 @@ using UnityEngine;
 
 #endregion
 
-namespace HyenaQuest.nav
+namespace HyenaQuest
 {
     public class entity_sdk_nav_add : MonoBehaviour
     {

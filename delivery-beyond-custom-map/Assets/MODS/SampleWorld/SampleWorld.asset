@@ -126,7 +126,7 @@ MonoBehaviour:
     density: 0.09
   musicVolume: 0.1
   heistMusic:
-  - {fileID: 8300000, guid: d960951d2f5b7164eac8e4a7f0deec3e, type: 3}
+  - {fileID: 8300000, guid: 0308a71bfa86d1d489be091c3f4a56a6, type: 3}
   skyMaterial: {fileID: 0}
   entry:
   - template: {fileID: 1892517844433793302, guid: 601ff38203f66374a980c5b3939922b3, type: 3}
@@ -152,6 +152,7 @@ MonoBehaviour:
   extraNetworkObjects:
   - {fileID: 652149422231537406, guid: 5afa48041571a3c4e8a00543ab4d8961, type: 3}
   - {fileID: 1578548330222871214, guid: 7a5fd32f743d425499ea3b709f6d45a0, type: 3}
+  - {fileID: 635132975131106632, guid: 8e06251555c7dea45ba8a87dc9ae7078, type: 3}
   references:
     version: 2
     RefIds: []
