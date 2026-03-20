@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 50137bfd47ec49c08639b89470eccf7c
+timeCreated: 1700105761
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Runtime/ColorToggleAttribute.cs
+  uploadId: 871252

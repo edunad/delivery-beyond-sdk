@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: f63a61ef3ef34bf79fd70ef4558496ae
+timeCreated: 1743414708
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Drawers/SortingLayerDrawer/SortingLayerAttributeDrawerIMGUI.cs
+  uploadId: 871252

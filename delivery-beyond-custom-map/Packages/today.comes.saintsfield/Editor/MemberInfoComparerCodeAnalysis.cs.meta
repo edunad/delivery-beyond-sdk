@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: eee0531f00fc471ab102e73dbfa3449e
+timeCreated: 1767843097
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/MemberInfoComparerCodeAnalysis.cs
+  uploadId: 871252

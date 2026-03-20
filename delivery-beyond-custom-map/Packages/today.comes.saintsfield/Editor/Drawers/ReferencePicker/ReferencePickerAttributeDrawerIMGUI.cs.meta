@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 91b62a85045c409690b3c58a7568cc60
+timeCreated: 1734504655
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Drawers/ReferencePicker/ReferencePickerAttributeDrawerIMGUI.cs
+  uploadId: 871252

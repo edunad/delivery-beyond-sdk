@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 199f4fdfd7674ee0bd689391c930a051
+timeCreated: 1743417800
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Drawers/InputAxisDrawer/InputAxisAttributeDrawerUIToolkit.cs
+  uploadId: 871252

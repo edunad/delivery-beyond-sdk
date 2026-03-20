@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 031a13e37f774a76825c5d5ee8b6ba80
+timeCreated: 1760952291
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Drawers/SaintsDictionary/UseRefElement.cs
+  uploadId: 871252

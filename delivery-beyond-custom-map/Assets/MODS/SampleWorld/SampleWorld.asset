@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9bd99aad33c4d6cb736d8d26f4fd8c6, type: 3}
+  m_Name: SampleWorld
+  m_EditorClassIdentifier: HyenaQuest.SDK::HyenaQuest.WorldSettings
+  uniqueName: SampleWorld
+  minRounds: 1
+  weight: 1
+  collisionChecks: 1
+  duplicateChecks: 1
+  interiorMirroring: 1
+  exitShuffle: 1
+  visCleanup: 1
+  modifiers: 3078
+  difficultyCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 2
+      value: 1.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 3
+      value: 2.2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 4
+      value: 2.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 5
+      value: 2.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 6
+      value: 3
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 7
+      value: 4
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  monsterDensity: 0.4
+  baseRooms: 9
+  minInteriorRooms: 3
+  biomeLimit:
+    _saintsKeys: []
+    _wrapTypeKey: 4
+    _saintsValues: []
+    _wrapTypeValue: 4
+    saintsSerializedVersion: 2
+    _keys: []
+    _values: 
+  templateLimit:
+    _saintsKeys: []
+    _wrapTypeKey: 4
+    _saintsValues: []
+    _wrapTypeValue: 4
+    saintsSerializedVersion: 2
+    _keys: []
+    _values: 
+  monsters:
+  - chance: 0.8
+    variants:
+    - {fileID: 2728560328131166454, guid: 729bed720e9905d4dae689170c71ec98, type: 3}
+  - chance: 1
+    variants:
+    - {fileID: 2392434089352066145, guid: 6a792034ac0883d4e8e762ed4a198022, type: 3}
+    - {fileID: 5141911404795008420, guid: e0f9ecbf26314f94d89743e9235ffdda, type: 3}
+    - {fileID: 4884055381405833533, guid: 7503cb52619bc96469d5f355f687df7e, type: 3}
+  - chance: 0.7
+    variants:
+    - {fileID: 6494909626512217006, guid: a6369529b87d4404e9bd77dbb584a8aa, type: 3}
+  fog:
+    color: {r: 0, g: 0, b: 0, a: 0}
+    density: 0.09
+  musicVolume: 0.1
+  heistMusic:
+  - {fileID: 8300000, guid: d960951d2f5b7164eac8e4a7f0deec3e, type: 3}
+  skyMaterial: {fileID: 0}
+  entry:
+  - template: {fileID: 1892517844433793302, guid: 601ff38203f66374a980c5b3939922b3, type: 3}
+    settings:
+      exterior: 0
+      doorOpenAngle: {x: 0, y: 0, z: 0}
+      shipOffset: {x: 0, y: 0, z: 0}
+      sun:
+        intensity: 0
+        angle: {x: 0, y: 0, z: 0}
+        color: {r: 0, g: 0, b: 0, a: 0}
+  closers:
+  - {fileID: 7657768007210905139, guid: 672e30e0084a19b45b8136b820eb42be, type: 3}
+  interiorClosers:
+  - {fileID: 7657768007210905139, guid: 672e30e0084a19b45b8136b820eb42be, type: 3}
+  interiors:
+  - {fileID: 6019724615188321957, guid: a7e365ff0df576749a969bbf58d27dbf, type: 3}
+  rooms:
+  - {fileID: 5554393771021163065, guid: 90559b23e1b9af344abc677c37d65864, type: 3}
+  - {fileID: 1362928613442653796, guid: b3e6784127708f84f92364ab6a187094, type: 3}
+  traversal: []
+  deadEnds: []
+  extraNetworkObjects:
+  - {fileID: 652149422231537406, guid: 5afa48041571a3c4e8a00543ab4d8961, type: 3}
+  - {fileID: 1578548330222871214, guid: 7a5fd32f743d425499ea3b709f6d45a0, type: 3}
+  references:
+    version: 2
+    RefIds: []

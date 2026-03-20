@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: d9ff00b06124b9045bda3ca016d32d8f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Utils/CodeAnalysisUtils.cs
+  uploadId: 871252

@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 21b1629a6f8b4b3bb6ebc81ce004cf26
+timeCreated: 1726738117
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Runtime/SaintsXPathParser/XPathStep.cs
+  uploadId: 871252

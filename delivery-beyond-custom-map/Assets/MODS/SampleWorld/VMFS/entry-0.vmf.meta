@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 1cc919e0285a00249b1a26ce3ded6bfa
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 546e019f2b734237af0dbfac3c497326, type: 3}
+  GenerateMaterialData: 1
+  GenerateTextures: 1
+  GenerateEntities: 1
+  GenerateColliders: 1
+  IsReadable: 1
+  Quality: 1

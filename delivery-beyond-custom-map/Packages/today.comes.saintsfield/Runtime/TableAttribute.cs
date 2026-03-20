@@ -1,0 +1,27 @@
+﻿// #if UNITY_2022_2_OR_NEWER || SAINTSFIELD_UI_TOOLKIT_DISABLE
+using System;
+using System.Diagnostics;
+using SaintsField.Interfaces;
+using SaintsField.Playa;
+using UnityEngine;
+
+// ReSharper disable once CheckNamespace
+namespace SaintsField
+{
+    [Conditional("UNITY_EDITOR")]
+    [AttributeUsage(AttributeTargets.Field)]
+    public class TableAttribute: Attribute, IPlayaAttribute
+    {
+        // public readonly bool DefaultExpanded;
+        public readonly bool HideAddButton;
+        public readonly bool HideRemoveButton;
+
+        public TableAttribute(bool hideAddButton=false, bool hideRemoveButton=false)
+        {
+            // DefaultExpanded = defaultExpanded;
+            HideAddButton = hideAddButton;
+            HideRemoveButton = hideRemoveButton;
+        }
+    }
+}
+// #endif

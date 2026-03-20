@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 5230611589034eb98803f74325beed83
+timeCreated: 1747280036
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Runtime/ComponentHeader/HeaderDrawAttribute.cs
+  uploadId: 871252

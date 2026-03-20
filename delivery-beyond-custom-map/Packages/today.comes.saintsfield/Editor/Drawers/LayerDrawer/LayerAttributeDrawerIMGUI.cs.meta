@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 652be76bc59b481798883dd12934eff9
+timeCreated: 1742550769
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Drawers/LayerDrawer/LayerAttributeDrawerIMGUI.cs
+  uploadId: 871252

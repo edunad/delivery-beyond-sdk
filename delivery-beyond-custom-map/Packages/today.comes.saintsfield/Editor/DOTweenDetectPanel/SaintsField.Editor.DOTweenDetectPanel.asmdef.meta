@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 61c9190d712b8b447a0495659609fecf
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/DOTweenDetectPanel/SaintsField.Editor.DOTweenDetectPanel.asmdef
+  uploadId: 871252

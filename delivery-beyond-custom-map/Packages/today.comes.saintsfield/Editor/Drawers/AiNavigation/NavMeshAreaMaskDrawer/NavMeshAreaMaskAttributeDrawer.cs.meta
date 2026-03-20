@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 961ead27815a4c78bfbe3d52d0857437
+timeCreated: 1709004999
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Drawers/AiNavigation/NavMeshAreaMaskDrawer/NavMeshAreaMaskAttributeDrawer.cs
+  uploadId: 871252

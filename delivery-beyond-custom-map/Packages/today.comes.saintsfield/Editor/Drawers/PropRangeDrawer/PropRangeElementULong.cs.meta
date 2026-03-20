@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 8949e9eb2185470da4107053ec4a481d
+timeCreated: 1762512572
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Editor/Drawers/PropRangeDrawer/PropRangeElementULong.cs
+  uploadId: 871252

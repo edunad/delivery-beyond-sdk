@@ -1,0 +1,770 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using SaintsField.DropdownBase;
+using SaintsField.Editor.Core;
+using SaintsField.Editor.Utils;
+using SaintsField.SaintsSerialization;
+using SaintsField.Utils;
+using UnityEditor;
+using UnityEngine;
+
+namespace SaintsField.Editor.Drawers.AdvancedDropdownDrawer
+{
+#if ODIN_INSPECTOR
+    [Sirenix.OdinInspector.Editor.DrawerPriority(Sirenix.OdinInspector.Editor.DrawerPriorityLevel.AttributePriority)]
+#endif
+    [CustomPropertyDrawer(typeof(AdvancedDropdownAttribute), true)]
+    public partial class AdvancedDropdownAttributeDrawer: SaintsPropertyDrawer
+    {
+        public struct SelectStack : IEquatable<SelectStack>
+        {
+            // ReSharper disable InconsistentNaming
+            public int Index;
+            public string Display;
+            // public object Value;
+            // ReSharper enable InconsistentNaming
+            public bool Equals(SelectStack other)
+            {
+                return Index == other.Index && Display == other.Display;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is SelectStack other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                return Util.CombineHashCode(Index, Display);
+            }
+
+            public override string ToString()
+            {
+                return $"[{Index}]{Display}";
+            }
+        }
+
+        public static AdvancedDropdownMetaInfo GetMetaInfo(SerializedProperty property, PathedDropdownAttribute advancedDropdownAttribute, MemberInfo field, object parentObj, bool isImGui, bool flat=false)
+        {
+            string funcName = advancedDropdownAttribute.FuncName;
+
+            string error;
+            IAdvancedDropdownList dropdownListValue = null;
+            // ReSharper disable once ConvertIfStatementToSwitchStatement
+            if (advancedDropdownAttribute.BehaveMode == PathedDropdownAttribute.Mode.Options)
+            {
+                AdvancedDropdownList<object> optionsDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Option": "");
+                foreach (object value in advancedDropdownAttribute.Options)
+                {
+                    optionsDropdown.Add(RuntimeUtil.IsNull(value)? "[Null]": value.ToString(), value);
+                }
+
+                error = "";
+                dropdownListValue = optionsDropdown;
+            }
+            else if (advancedDropdownAttribute.BehaveMode == PathedDropdownAttribute.Mode.Tuples)
+            {
+                AdvancedDropdownList<object> tuplesDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Option": "");
+                foreach ((string path, object value) in advancedDropdownAttribute.Tuples)
+                {
+                    tuplesDropdown.Add(path, value);
+                }
+
+                error = "";
+                dropdownListValue = tuplesDropdown;
+            }
+            else if (funcName is null)
+            {
+                Type memberInfoType = field is FieldInfo fInfo
+                    ? fInfo.FieldType
+                    : ((PropertyInfo)field).PropertyType;
+
+                Type elementType = SerializedUtils.IsArrayOrDirectlyInsideArray(property)
+                    ? ReflectUtils.GetElementType(memberInfoType)
+                    : memberInfoType;
+
+                // Debug.Log(elementType);
+                if (elementType == typeof(bool))
+                {
+                    AdvancedDropdownList<object> boolDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Enum": "")
+                    {
+                        {"True", true },
+                        {"False", false },
+                    };
+
+                    error = "";
+                    dropdownListValue = boolDropdown;
+                }
+                else if(elementType.IsEnum)
+                {
+                    AdvancedDropdownList<object> enumDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Enum": "");
+                    foreach ((object enumValue, string enumLabel, string enumRichLabel)  in Util.GetEnumValues(elementType))
+                    {
+                        // Debug.Log($"enum={enumLabel}, rich={enumRichLabel}");
+                        HashSet<string> extraSearches = enumRichLabel == enumLabel
+                            ? new HashSet<string>
+                            {
+                                enumValue.ToString(),
+                            }
+                            : new HashSet<string>();
+                        if (flat)
+                        {
+                            enumDropdown.Add(new AdvancedDropdownList<object>(enumRichLabel ?? enumLabel, enumValue)
+                            {
+                                ExtraSearches = extraSearches,
+                            });
+                        }
+                        else {
+                            enumDropdown.Add(enumRichLabel ?? enumLabel, enumValue, extraSearches: extraSearches);
+                        }
+                    }
+
+                    error = "";
+                    dropdownListValue = enumDropdown;
+                }
+                else
+                {
+                    AdvancedDropdownList<object> staticDropdown = new AdvancedDropdownList<object>(isImGui? $"Pick a {elementType.Name}": "");
+
+                    Dictionary<object, List<string>> valueToNames = new Dictionary<object, List<string>>();
+
+                    // Get static fields
+                    FieldInfo[] staticFields = elementType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    foreach (FieldInfo eachField in staticFields)
+                    {
+                        object value = eachField.GetValue(null);
+                        // ReSharper disable once InvertIf
+                        if (value != null && elementType.IsAssignableFrom(value.GetType()))
+                        {
+                            if (!valueToNames.TryGetValue(value, out List<string> names))
+                            {
+                                valueToNames[value] = names = new List<string>();
+                            }
+                            names.Add(eachField.Name);
+                        }
+                    }
+
+                    // Get static properties
+                    PropertyInfo[] staticProperties = elementType.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    foreach (PropertyInfo eachProp in staticProperties)
+                    {
+                        object value = eachProp.GetValue(null);
+                        if (elementType.IsAssignableFrom(value.GetType()))
+                        {
+                            if (!valueToNames.TryGetValue(value, out List<string> names))
+                            {
+                                valueToNames[value] = names = new List<string>();
+                            }
+                            names.Add(eachProp.Name);
+                        }
+                    }
+
+                    // ReSharper disable once UseDeconstruction
+                    foreach (KeyValuePair<object, List<string>> kv in valueToNames)
+                    {
+                        object value = kv.Key;
+                        List<string> names = kv.Value;
+                        names.Sort();
+                        string displayName;
+                        if (isImGui)
+                        {
+                            displayName = names[0] + (names.Count <= 1? "": $" ({string.Join(",", names.Skip(1))})");
+                        }
+                        else
+                        {
+                            displayName = names[0] + (names.Count <= 1? "": $" <color=#808080ff>({string.Join(",", names.Skip(1))})</color>");
+                        }
+
+                        staticDropdown.Add(new AdvancedDropdownList<object>(displayName, value));
+                    }
+
+                    error = "";
+                    dropdownListValue = staticDropdown;
+                    // error = $"{property.displayName}({elementType}) is not a enum";
+                }
+            }
+            else
+            {
+                (string getOfError, object obj) =
+                    Util.GetOf<object>(funcName, null, property, field, parentObj, null);
+                error = getOfError;
+                if (obj is IAdvancedDropdownList getOfDropdownListValue)
+                {
+                    getOfDropdownListValue.SelfCompact();
+                    dropdownListValue = getOfDropdownListValue;
+                }
+                else if (obj is IEnumerable ieObj)
+                {
+                    AdvancedDropdownList<object> list = new AdvancedDropdownList<object>(isImGui? "Pick an item": "");
+                    foreach (object each in ieObj)
+                    {
+                        if (flat)
+                        {
+                            list.Add(new AdvancedDropdownList<object>($"{each}", each));
+                        }
+                        else
+                        {
+                            list.Add($"{each}", each);
+                        }
+                    }
+
+                    dropdownListValue = list;
+                }
+                else
+                {
+                    error = $"{funcName} return value is not a AdvancedDropdownList";
+                }
+            }
+            if(dropdownListValue == null || error != "")
+            {
+                return new AdvancedDropdownMetaInfo
+                {
+                    Error = error == ""? $"dropdownList is null from `{funcName}` on target `{parentObj}`": error,
+                    CurDisplay = "[Error]",
+                    CurValues = Array.Empty<object>(),
+                    DropdownListValue = null,
+                    SelectStacks = Array.Empty<SelectStack>(),
+                };
+            }
+
+            #region Get Cur Value
+
+            (string curError, int _, object curValue)  = Util.GetValue(property, field, parentObj);
+#if SAINTSFIELD_DEBUG && SAINTSFIELD_DEBUG_ADVANCED_DROPDOWN
+            Debug.Log($"get cur value {curValue}, {parentObj}->{field}");
+#endif
+            if (curError != "")
+            {
+                return new AdvancedDropdownMetaInfo
+                {
+                    Error = curError,
+                    CurDisplay = "[Error]",
+                    CurValues = Array.Empty<object>(),
+                    DropdownListValue = null,
+                    SelectStacks = Array.Empty<SelectStack>(),
+                };
+            }
+            if (curValue is IWrapProp wrapProp)
+            {
+                curValue = Util.GetWrapValue(wrapProp);
+            }
+
+            // process the unique options
+            (string uniqueError, IAdvancedDropdownList dropdownListValueUnique) = GetUniqueList(dropdownListValue, advancedDropdownAttribute.EUnique, curValue, property, field, parentObj);
+
+            if (uniqueError != "")
+            {
+                return new AdvancedDropdownMetaInfo
+                {
+                    Error = curError,
+                    CurDisplay = "[Error]",
+                    CurValues = Array.Empty<object>(),
+                    DropdownListValue = null,
+                    SelectStacks = Array.Empty<SelectStack>(),
+                };
+            }
+
+            // string curDisplay = "";
+            (IReadOnlyList<SelectStack> curSelected, string display) = AdvancedDropdownUtil.GetSelected(curValue, Array.Empty<SelectStack>(), dropdownListValueUnique);
+            #endregion
+
+            return new AdvancedDropdownMetaInfo
+            {
+                Error = "",
+                // FieldInfo = field,
+                CurDisplay = display,
+                CurValues = new[]{curValue},
+                DropdownListValue = dropdownListValueUnique,
+                SelectStacks = curSelected,
+            };
+        }
+
+        private static (string error, IAdvancedDropdownList dropdownList) GetUniqueList(IAdvancedDropdownList dropdownListValue, EUnique eUnique, object curValue, SerializedProperty property, MemberInfo info, object parent)
+        {
+            if(eUnique == EUnique.None)
+            {
+                return ("", dropdownListValue);
+            }
+
+            int arrayIndex = SerializedUtils.PropertyPathIndex(property.propertyPath);
+            if (arrayIndex == -1)
+            {
+                return ("", dropdownListValue);
+            }
+
+            (SerializedProperty arrProp, int _, string error) = Util.GetArrayProperty(property, info, parent);
+            if (error != "")
+            {
+                return (error, null);
+            }
+
+            List<object> existsValues = new List<object>();
+
+            foreach (SerializedProperty element in Enumerable.Range(0, arrProp.arraySize).Where(index => index != arrayIndex).Select(arrProp.GetArrayElementAtIndex))
+            {
+                (string otherError, int _, object otherValue) = Util.GetValue(element, info, parent);
+                if (otherError != "")
+                {
+                    return (otherError, null);
+                }
+
+                if (otherValue is IWrapProp wrapProp)
+                {
+                    otherValue = Util.GetWrapValue(wrapProp);
+                }
+
+                existsValues.Add(otherValue);
+            }
+
+            // if (eUnique == EUnique.Remove)
+            // {
+            //     existsValues.Remove(curValue);
+            // }
+
+            return ("", ReWrapUniqueList(dropdownListValue, eUnique, existsValues, curValue));
+        }
+
+        public static AdvancedDropdownMetaInfo GetMetaInfoShowInInspector(Type elementType, PathedDropdownAttribute advancedDropdownAttribute, object v, object parentObj, bool isImGui, bool flat=false)
+        {
+            string funcName = advancedDropdownAttribute.FuncName;
+
+            string error;
+            IAdvancedDropdownList dropdownListValue = null;
+            // ReSharper disable once ConvertIfStatementToSwitchStatement
+            if (advancedDropdownAttribute.BehaveMode == PathedDropdownAttribute.Mode.Options)
+            {
+                AdvancedDropdownList<object> optionsDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Option": "");
+                foreach (object value in advancedDropdownAttribute.Options)
+                {
+                    optionsDropdown.Add(RuntimeUtil.IsNull(value)? "[Null]": value.ToString(), value);
+                }
+
+                error = "";
+                dropdownListValue = optionsDropdown;
+            }
+            else if (advancedDropdownAttribute.BehaveMode == PathedDropdownAttribute.Mode.Tuples)
+            {
+                AdvancedDropdownList<object> tuplesDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Option": "");
+                foreach ((string path, object value) in advancedDropdownAttribute.Tuples)
+                {
+                    tuplesDropdown.Add(path, value);
+                }
+
+                error = "";
+                dropdownListValue = tuplesDropdown;
+            }
+            else if (funcName is null)
+            {
+                if (elementType == typeof(bool))
+                {
+                    AdvancedDropdownList<object> boolDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Enum": "")
+                    {
+                        {"True", true },
+                        {"False", false },
+                    };
+
+                    error = "";
+                    dropdownListValue = boolDropdown;
+                }
+                else if(elementType.IsEnum)
+                {
+                    AdvancedDropdownList<object> enumDropdown = new AdvancedDropdownList<object>(isImGui? "Pick an Enum": "");
+                    foreach ((object enumValue, string enumLabel, string enumRichLabel)  in Util.GetEnumValues(elementType))
+                    {
+                        if (flat)
+                        {
+                            enumDropdown.Add(new AdvancedDropdownList<object>(enumRichLabel ?? enumLabel, enumValue));
+                        }
+                        else {
+                            enumDropdown.Add(enumRichLabel ?? enumLabel, enumValue);
+                        }
+                    }
+
+                    error = "";
+                    dropdownListValue = enumDropdown;
+                }
+                else
+                {
+                    AdvancedDropdownList<object> staticDropdown = new AdvancedDropdownList<object>(isImGui? $"Pick a {elementType.Name}": "");
+
+                    Dictionary<object, List<string>> valueToNames = new Dictionary<object, List<string>>();
+
+                    // Get static fields
+                    FieldInfo[] staticFields = elementType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    foreach (FieldInfo eachField in staticFields)
+                    {
+                        object value = eachField.GetValue(null);
+                        // ReSharper disable once InvertIf
+                        if (value != null && elementType.IsAssignableFrom(value.GetType()))
+                        {
+                            if (!valueToNames.TryGetValue(value, out List<string> names))
+                            {
+                                valueToNames[value] = names = new List<string>();
+                            }
+                            names.Add(eachField.Name);
+                        }
+                    }
+
+                    // Get static properties
+                    PropertyInfo[] staticProperties = elementType.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    foreach (PropertyInfo eachProp in staticProperties)
+                    {
+                        object value = eachProp.GetValue(null);
+                        if (elementType.IsAssignableFrom(value.GetType()))
+                        {
+                            if (!valueToNames.TryGetValue(value, out List<string> names))
+                            {
+                                valueToNames[value] = names = new List<string>();
+                            }
+                            names.Add(eachProp.Name);
+                        }
+                    }
+
+                    // ReSharper disable once UseDeconstruction
+                    foreach (KeyValuePair<object, List<string>> kv in valueToNames)
+                    {
+                        object value = kv.Key;
+                        List<string> names = kv.Value;
+                        names.Sort();
+                        string displayName;
+                        if (isImGui)
+                        {
+                            displayName = names[0] + (names.Count <= 1? "": $" ({string.Join(",", names.Skip(1))})");
+                        }
+                        else
+                        {
+                            displayName = names[0] + (names.Count <= 1? "": $" <color=#808080ff>({string.Join(",", names.Skip(1))})</color>");
+                        }
+
+                        staticDropdown.Add(new AdvancedDropdownList<object>(displayName, value));
+                    }
+
+                    error = "";
+                    dropdownListValue = staticDropdown;
+                    // error = $"{property.displayName}({elementType}) is not a enum";
+                }
+            }
+            else
+            {
+                (object obj, string getOfError) = GetCallbackForShowInInspector(funcName, v, parentObj);
+                    // Util.GetOf<object>(funcName, null, property, field, parentObj);
+                error = getOfError;
+                if (obj is IAdvancedDropdownList getOfDropdownListValue)
+                {
+                    getOfDropdownListValue.SelfCompact();
+                    dropdownListValue = getOfDropdownListValue;
+                }
+                else if (obj is IEnumerable ieObj)
+                {
+                    AdvancedDropdownList<object> list = new AdvancedDropdownList<object>(isImGui? "Pick an item": "");
+                    foreach (object each in ieObj)
+                    {
+                        if (flat)
+                        {
+                            list.Add(new AdvancedDropdownList<object>($"{each}", each));
+                        }
+                        else
+                        {
+                            list.Add($"{each}", each);
+                        }
+                    }
+
+                    dropdownListValue = list;
+                }
+                else
+                {
+                    error = $"{funcName} return value is not a AdvancedDropdownList";
+                }
+            }
+            if(dropdownListValue == null || error != "")
+            {
+                return new AdvancedDropdownMetaInfo
+                {
+                    Error = error == ""? $"dropdownList is null from `{funcName}` on target `{parentObj}`": error,
+                    CurDisplay = "[Error]",
+                    CurValues = Array.Empty<object>(),
+                    DropdownListValue = null,
+                    SelectStacks = Array.Empty<SelectStack>(),
+                };
+            }
+
+            #region Get Cur Value
+
+#if SAINTSFIELD_DEBUG && SAINTSFIELD_DEBUG_ADVANCED_DROPDOWN
+            Debug.Log($"get cur value {curValue}, {parentObj}->{field}");
+#endif
+
+            // process the unique options
+            // This won't work for ShowInInspector because we can not find siblings
+            // (string uniqueError, IAdvancedDropdownList dropdownListValueUnique) =
+            //     GetUniqueListShowInInspector(dropdownListValue, advancedDropdownAttribute.EUnique, curValue, field, parentObj);
+            //
+            // if (uniqueError != "")
+            // {
+            //     return new AdvancedDropdownMetaInfo
+            //     {
+            //         Error = uniqueError,
+            //         CurDisplay = "[Error]",
+            //         CurValues = Array.Empty<object>(),
+            //         DropdownListValue = null,
+            //         SelectStacks = Array.Empty<SelectStack>(),
+            //     };
+            // }
+
+            // string curDisplay = "";
+            (IReadOnlyList<SelectStack> curSelected, string display) = AdvancedDropdownUtil.GetSelected(v, Array.Empty<SelectStack>(), dropdownListValue);
+            #endregion
+
+            return new AdvancedDropdownMetaInfo
+            {
+                Error = "",
+                // FieldInfo = field,
+                CurDisplay = display,
+                CurValues = new[] { v },
+                DropdownListValue = dropdownListValue,
+                SelectStacks = curSelected,
+            };
+        }
+
+
+
+        private static (object getValue, string getError) GetCallbackForShowInInspector(string callback, object curValue, object target)
+        {
+            foreach (Type type in ReflectUtils.GetSelfAndBaseTypesFromInstance(target))
+            {
+                (ReflectUtils.GetPropType getPropType, object fieldOrMethodInfo) = ReflectUtils.GetProp(type, callback);
+
+                switch (getPropType)
+                {
+                    case ReflectUtils.GetPropType.NotFound:
+                        continue;
+
+                    case ReflectUtils.GetPropType.Property:
+                    {
+                        object genResult = ((PropertyInfo)fieldOrMethodInfo).GetValue(target);
+                        if(genResult != null)
+                        {
+                            return (genResult, "");
+                        }
+                    }
+                        break;
+                    case ReflectUtils.GetPropType.Field:
+                    {
+                        FieldInfo fInfo = (FieldInfo)fieldOrMethodInfo;
+                        object genResult = fInfo.GetValue(target);
+                        if(genResult != null)
+                        {
+                            return (genResult, "");
+                        }
+                        // Debug.Log($"{fInfo}/{fInfo.Name}, target={target} genResult={genResult}");
+                    }
+                        break;
+                    case ReflectUtils.GetPropType.Method:
+                    {
+                        MethodInfo methodInfo = (MethodInfo)fieldOrMethodInfo;
+
+                        (string error, object[] passParams) = ReflectUtils.MethodParamsFill(methodInfo.GetParameters(), new[]
+                        {
+                            curValue,
+                        });
+
+                        if (error != "")
+                        {
+                            continue;
+                        }
+
+
+                        object genResult;
+                        try
+                        {
+                            genResult = methodInfo.Invoke(target, passParams);
+                        }
+                        catch (TargetInvocationException e)
+                        {
+                            return (e.InnerException?.Message ?? e.Message, null);
+                        }
+                        catch (Exception e)
+                        {
+                            return (e.Message, null);
+                        }
+
+                        if (genResult != null)
+                        {
+                            return (genResult, "");
+                        }
+
+                        break;
+                    }
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(getPropType), getPropType, null);
+                }
+            }
+
+            return ($"Target `{callback}` not found", null);
+        }
+
+        private static AdvancedDropdownList<object> ReWrapUniqueList(IAdvancedDropdownList dropdownListValue, EUnique eUnique, List<object> existsValues, object curValue)
+        {
+            AdvancedDropdownList<object> dropdownList = new AdvancedDropdownList<object>(dropdownListValue.displayName, dropdownListValue.disabled, dropdownListValue.icon);
+            IReadOnlyList<AdvancedDropdownList<object>> children = ReWrapUniqueChildren(dropdownListValue.children, eUnique, existsValues, curValue);
+            dropdownList.SetChildren(children.ToList());
+            return dropdownList;
+        }
+
+        private static IReadOnlyList<AdvancedDropdownList<object>> ReWrapUniqueChildren(IReadOnlyList<IAdvancedDropdownList> children, EUnique eUnique, IReadOnlyList<object> existsValues, object curValue)
+        {
+            List<AdvancedDropdownList<object>> newChildren = new List<AdvancedDropdownList<object>>();
+            foreach (IAdvancedDropdownList originChild in children)
+            {
+                if (originChild.isSeparator)
+                {
+                    newChildren.Add(AdvancedDropdownList<object>.Separator());
+                }
+                else if (originChild.ChildCount() > 0)  // has sub child
+                {
+                    IReadOnlyList<AdvancedDropdownList<object>> subChildren = ReWrapUniqueChildren(originChild.children, eUnique, existsValues, curValue);
+                    if (subChildren.Any(each => !each.isSeparator))
+                    {
+                        bool isDisabled = originChild.disabled ||
+                                          subChildren.All(each => each.isSeparator || each.disabled);
+                        AdvancedDropdownList<object> newChild = new AdvancedDropdownList<object>(originChild.displayName, isDisabled, originChild.icon);
+                        newChild.SetChildren(subChildren.ToList());
+                        newChildren.Add(newChild);
+                    }
+                }
+                else
+                {
+                    object childValue = originChild.value;
+                    bool exists = existsValues.Any(each => Util.GetIsEqual(each, childValue));
+                    if (!exists)
+                    {
+                        newChildren.Add(new AdvancedDropdownList<object>(
+                            originChild.displayName,
+                            originChild.value,
+                            originChild.disabled,
+                            originChild.icon,
+                            originChild.isSeparator));
+                    }
+                    else if (eUnique == EUnique.Disable)
+                    {
+                        newChildren.Add(new AdvancedDropdownList<object>(
+                            originChild.displayName,
+                            originChild.value,
+                            true,
+                            originChild.icon,
+                            originChild.isSeparator));
+                    }
+                    else if (eUnique == EUnique.Remove)
+                    {
+                        if (Util.GetIsEqual(originChild.value, curValue))
+                        {
+                            newChildren.Add(new AdvancedDropdownList<object>(
+                                originChild.displayName,
+                                originChild.value,
+                                true,
+                                originChild.icon,
+                                originChild.isSeparator));
+                        }
+                    }
+                }
+            }
+
+            if (newChildren.All(each => each.isSeparator))
+            {
+                newChildren.Clear();
+            }
+
+            return newChildren;
+        }
+
+        public static string GetMetaStackDisplay(AdvancedDropdownMetaInfo metaInfo)
+        {
+            return metaInfo.SelectStacks.Count == 0
+                ? "-"
+                : string.Join("/", metaInfo.SelectStacks.Skip(1).Select(each => each.Display).Append(metaInfo.CurDisplay));
+        }
+
+
+        // private static IEnumerable<(IReadOnlyList<string> stackDisplays, string display, string icon, bool disabled, object value)> FlattenChild(IReadOnlyList<string> stackDisplays, IEnumerable<IAdvancedDropdownList> children)
+        private static IEnumerable<FlattenInfo> FlattenChild(IReadOnlyList<string> stackDisplays, IEnumerable<IAdvancedDropdownList> children)
+        {
+            foreach (IAdvancedDropdownList child in children)
+            {
+                if (child.ChildCount() > 0)
+                {
+                    // List<(string, object, List<object>, bool, string, bool)> grandChildren = child.Item3.Cast<(string, object, List<object>, bool, string, bool)>().ToList();
+                    foreach (FlattenInfo grandChild in FlattenChild(Prefix(stackDisplays, child.displayName), child.children.Where(each => !each.isSeparator)))
+                    {
+                        yield return grandChild;
+                    }
+                }
+                else
+                {
+                    yield return new FlattenInfo(
+                        Prefix(stackDisplays, child.displayName),
+                        child.displayName,
+                        child.icon,
+                        child.disabled,
+                        child.value,
+                        child.ExtraSearches);
+                }
+            }
+        }
+
+        public readonly struct FlattenInfo
+        {
+            public readonly IReadOnlyList<string> stackDisplays;
+            public readonly string display;
+            public readonly string icon;
+            public readonly bool disabled;
+            public readonly object value;
+            public readonly ICollection<string> extraSearches;
+
+            public FlattenInfo(IReadOnlyList<string> stackDisplays, string display, string icon, bool disabled, object value, ICollection<string> extraSearches)
+            {
+                this.stackDisplays = stackDisplays;
+                this.display = display;
+                this.icon = icon;
+                this.disabled = disabled;
+                this.value = value;
+                this.extraSearches = extraSearches;
+            }
+        }
+
+        // public static IEnumerable<(IReadOnlyList<string> stackDisplays, string display, string icon, bool disabled, object value)> Flatten(IAdvancedDropdownList roots)
+        public static IEnumerable<FlattenInfo> Flatten(IAdvancedDropdownList roots)
+        {
+            foreach (IAdvancedDropdownList root in roots)
+            {
+                if (root.ChildCount() > 0)
+                {
+                    // IAdvancedDropdownList children = root.Item3.Cast<(string, object, List<object>, bool, string, bool)>().ToList();
+                    foreach (FlattenInfo child in FlattenChild(new[]{root.displayName}, root.children.Where(each => !each.isSeparator)))
+                    {
+                        yield return child;
+                    }
+                }
+                else
+                {
+                    yield return new FlattenInfo(
+                        new []{root.displayName},
+                        root.displayName,
+                        root.icon,
+                        root.disabled,
+                        root.value,
+                        root.ExtraSearches);
+                }
+            }
+        }
+
+        private static IReadOnlyList<string> Prefix(IReadOnlyList<string> stackDisplays, string value)
+        {
+            return stackDisplays == null ? new[] { value } : stackDisplays.Append(value).ToArray();
+        }
+
+    }
+}

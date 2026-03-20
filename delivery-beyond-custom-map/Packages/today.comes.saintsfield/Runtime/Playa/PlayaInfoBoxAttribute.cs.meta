@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: cea1e0a3904846ab944d6bfc28719ba1
+timeCreated: 1760439274
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Runtime/Playa/PlayaInfoBoxAttribute.cs
+  uploadId: 871252

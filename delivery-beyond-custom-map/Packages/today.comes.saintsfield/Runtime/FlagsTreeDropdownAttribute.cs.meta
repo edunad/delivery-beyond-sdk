@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 6ebaa0f3a5f944f4bfc6629866a25507
+timeCreated: 1756477907
+AssetOrigin:
+  serializedVersion: 1
+  productId: 269741
+  packageName: Saints Field
+  packageVersion: 5.11.4 Bug Fix
+  assetPath: Packages/today.comes.saintsfield/Runtime/FlagsTreeDropdownAttribute.cs
+  uploadId: 871252
