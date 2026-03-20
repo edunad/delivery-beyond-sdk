@@ -42,6 +42,7 @@ namespace HyenaQuest
             SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
         }
 
+        #region PRIVATE
         #if UNITY_EDITOR
          /// <summary>
         /// USED TO MIMIC entity_door
@@ -112,5 +113,6 @@ namespace HyenaQuest
             }
         }
         #endif
+        #endregion
     }
 }

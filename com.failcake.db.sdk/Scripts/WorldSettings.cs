@@ -242,7 +242,7 @@ namespace HyenaQuest
         public List<GameObject> deadEnds;
         
         [LayoutStart("Networking", ELayout.Background | ELayout.TitleOut)]
-        [InfoBox("Make sure to add any extra networked objects here (aka objects that have NetworkObject component), not including the ones already referenced here.")]
+        [InfoBox("Make sure to add any extra networked objects here (aka objects that have NetworkObject component), not including the ones already referenced above.")]
         public List<GameObject> extraNetworkObjects;
         
         #region PRIVATE

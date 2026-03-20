@@ -35,6 +35,14 @@ namespace HyenaQuest
 
         private bool UseCustomSounds => this.collisionMaterial == SoundTypes.CUSTOM;
 
+        #endregion
+        
+        public void Awake() {
+            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
+        }
+
+        
+        #region PRIVATE
         #if UNITY_EDITOR
          /// <summary>
         /// USED TO MIMIC entity_door
