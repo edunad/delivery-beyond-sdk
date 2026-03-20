@@ -208,12 +208,16 @@ namespace HyenaQuest
         public bool IsRoomVisibile() { return this._isVIS; }
         
         public override void OnNetworkSpawn() {
+            base.OnNetworkSpawn();
+            
             this._BOUNDS_ = util_bounds.GetWorldBounds(this._BOUNDS_, this.transform); // Update bounds
             if (!this.IsServer) return;
             this.PickLayerData();
         }
 
         public override void OnNetworkDespawn() {
+            base.OnNetworkDespawn();
+            
             if (!this.IsServer) return;
             this.DespawnTemplates();
         }

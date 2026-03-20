@@ -61,6 +61,8 @@ namespace HyenaQuest
         #endregion
 
         public override void OnNetworkSpawn() {
+            base.OnNetworkSpawn();
+            
             SDK_SETUP.OnDeliverySpotRegister?.Invoke(this);
             if (!this.IsServer) return;
 
@@ -71,6 +73,8 @@ namespace HyenaQuest
         }
 
         public override void OnNetworkDespawn() {
+            base.OnNetworkDespawn();
+            
             SDK_SETUP.OnDeliverySpotUnregister?.Invoke(this);
             if (!this.IsServer) return;
 

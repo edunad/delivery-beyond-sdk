@@ -25,6 +25,8 @@ namespace HyenaQuest
         }
 
         public override void OnNetworkSpawn() {
+            base.OnNetworkSpawn();
+            
             // EVENTS ---
             CoreController.WaitFor<PowerController>(powerCtrl => {
                 powerCtrl.OnGridUpdate += this.OnGridUpdate;
@@ -34,6 +36,7 @@ namespace HyenaQuest
         }
 
         public override void OnNetworkDespawn() {
+            base.OnNetworkDespawn();
             if (!PowerController.Instance) return;
 
             // EVENTS ---
