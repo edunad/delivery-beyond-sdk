@@ -101,12 +101,12 @@ namespace HyenaQuest
 
         private void OnEnter(Collider other) {
             if (!this.IsServer || !other) return;
-            other.SendMessage("OnDeliverySpotEnter", this._deliveryAddress.Value, SendMessageOptions.DontRequireReceiver);
+            other.SendMessageUpwards("OnDeliverySpotEnter", this._deliveryAddress.Value, SendMessageOptions.DontRequireReceiver);
         }
 
         private void OnExit(Collider other) {
             if (!this.IsServer || !other) return;
-            other.SendMessage("OnDeliverySpotExit", this._deliveryAddress.Value, SendMessageOptions.DontRequireReceiver);
+            other.SendMessageUpwards("OnDeliverySpotExit", this._deliveryAddress.Value, SendMessageOptions.DontRequireReceiver);
         }
 
         #endregion
