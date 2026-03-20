@@ -88,7 +88,7 @@ namespace HyenaQuest
             Mesh meshToDraw = null;
             Transform meshTransform = null;
 
-            if (this.template.name.StartsWith("SDK-entity_scrap"))
+            if (this.template.name.StartsWith("SDK-"))
             {
                 this._scrapSDK = preview.GetComponent<entity_sdk_replacement>();
                 if (this._scrapSDK)
