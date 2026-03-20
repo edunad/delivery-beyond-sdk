@@ -5,9 +5,9 @@ namespace HyenaQuest
 {
     public class entity_sdk_replacement : MonoBehaviour
     {
-        [InfoBox("This entity template should be placed inside a entity_network_spawn")]
         #if UNITY_EDITOR
-        [FieldInfoBox("DO NOT EDIT, USED TO MAP TEMPLATES ON THE MAIN GAME", EMessageType.Error)]
+        [InfoBox("This entity template should be placed inside a entity_network_spawn")]
+        [InfoBox("DO NOT EDIT, USED TO MAP TEMPLATES ON THE MAIN GAME", EMessageType.Error)]
         public Mesh preview;
 
         public void OnDrawGizmos() {
