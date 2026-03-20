@@ -32,7 +32,10 @@ namespace HyenaQuest.nav
         #if UNITY_EDITOR
         public void OnValidate() {
             if (Application.isPlaying) return;
-            this.name = "entity_sdk_nav_link";
+            
+            string newName = "entity_sdk_nav_link";
+            if (this.name == newName) return;
+            this.name = newName;
         }
         
         public void OnDrawGizmos() {

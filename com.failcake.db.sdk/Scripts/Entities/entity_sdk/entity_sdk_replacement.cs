@@ -18,7 +18,10 @@ namespace HyenaQuest
 
         public void OnValidate() {
             if (Application.isPlaying || !this.preview) return;
-            this.name = $"SDK-{this.preview.name}";
+            
+            string newName = $"SDK-{this.preview.name}";
+            if (this.name == newName) return;
+            this.name = newName;
         }
         #endif
     }

@@ -24,7 +24,10 @@ namespace HyenaQuest.nav
         
         public void OnValidate() {
             if (Application.isPlaying) return;
-            this.name = "entity_sdk_nav_cut";
+            
+            string newName = "entity_sdk_nav_cut";
+            if (this.name == newName) return;
+            this.name = newName;
         }
         #endif
     }

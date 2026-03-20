@@ -43,7 +43,10 @@ namespace HyenaQuest
         #if UNITY_EDITOR
         public void OnValidate() {
             if (Application.isPlaying) return;
-            this.name = $"entity_sdk_interior_door";
+            
+            string newName = "entity_sdk_interior_door";
+            if (this.name == newName) return;
+            this.name = newName;
         }
         #endif
     }
