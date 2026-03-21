@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9bd99aad33c4d6cb736d8d26f4fd8c6, type: 3}
-  m_Name: SampleWorld
+  m_Name: YeenRooms
   m_EditorClassIdentifier: HyenaQuest.SDK::HyenaQuest.WorldSettings
   uniqueName: SampleWorld
   minRounds: 1
