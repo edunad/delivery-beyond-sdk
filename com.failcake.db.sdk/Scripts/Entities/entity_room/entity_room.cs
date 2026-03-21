@@ -8,7 +8,7 @@ namespace HyenaQuest
 
         #endregion
 
-        protected override int TextureLayerSeed() { return SDK_SETUP.GetSeed?.Invoke() ?? -1; }
+        protected override int TextureLayerSeed() { return SDK.GetSeed?.Invoke() ?? -1; }
 
         public entity_interior_exit[] GetInteriorExits() {
             return this.GetComponentsInChildren<entity_interior_exit>(true); // Cannot be cached

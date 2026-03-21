@@ -43,7 +43,7 @@ namespace HyenaQuest
             if (!this.gameObject.activeInHierarchy) return;
             if (col.transform.IsChildOf(this.transform) || col.gameObject == this.gameObject) return;
 
-            SDK_SETUP.OnDamageRequest?.Invoke(this.damageType, this.damage, this.damageCooldown, this.damageOnMove, col);
+            SDK.OnDamageRequest?.Invoke(this.damageType, this.damage, this.damageCooldown, this.damageOnMove, col);
         }
 
         #endregion

@@ -91,7 +91,7 @@ namespace HyenaQuest
                     break;
             }
 
-            if (!hasPower && grid == PowerGrid.MAP) SDK_SETUP.Play2DSound?.Invoke("Ingame/Cycle/power_off.ogg", new AudioData { volume = 0.1f }, true);
+            if (!hasPower && grid == PowerGrid.MAP) SDK.Play2DSound?.Invoke("Ingame/Cycle/power_off.ogg", new AudioData { volume = 0.1f }, true);
             this.OnGridUpdate.Invoke(grid, hasPower, true);
         }
 

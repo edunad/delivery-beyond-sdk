@@ -39,7 +39,7 @@ namespace HyenaQuest
         #endregion
         
         public void Awake() {
-            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
+            SDK.PatchSDKEntity?.Invoke(this.gameObject);
         }
         
         #region PRIVATE

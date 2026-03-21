@@ -63,7 +63,7 @@ namespace HyenaQuest
         public override void OnNetworkSpawn() {
             base.OnNetworkSpawn();
             
-            SDK_SETUP.OnDeliverySpotRegister?.Invoke(this);
+            SDK.OnDeliverySpotRegister?.Invoke(this);
             if (!this.IsServer) return;
 
             // EVENTS ---
@@ -75,7 +75,7 @@ namespace HyenaQuest
         public override void OnNetworkDespawn() {
             base.OnNetworkDespawn();
             
-            SDK_SETUP.OnDeliverySpotUnregister?.Invoke(this);
+            SDK.OnDeliverySpotUnregister?.Invoke(this);
             if (!this.IsServer) return;
 
             // EVENTS 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace HyenaQuest
 {
-    [RequireComponent(typeof(LineRenderer)), ExecuteInEditMode]
+    [RequireComponent(typeof(LineRenderer))]
     public class entity_laser : MonoBehaviour
     {
         [LayoutStart("Settings", ELayout.Background | ELayout.TitleOut), Required]
@@ -38,7 +38,7 @@ namespace HyenaQuest
         public void Update() {
             if (!this._lineRenderer || !this.hitEnd) return;
             
-            bool isActive = (SDK_SETUP.GetCurrentRound?.Invoke() ?? 1) >= 2;
+            bool isActive = (SDK.GetCurrentRound?.Invoke() ?? 1) >= 2;
             
             this._lineRenderer.enabled = isActive;
             this.hitEnd.SetActive(isActive);
@@ -53,7 +53,7 @@ namespace HyenaQuest
                 end = hit.point;
 
                 if (hit.rigidbody && hit.collider.gameObject.CompareTag("Player"))
-                    SDK_SETUP.OnKillRequest?.Invoke(DamageType.ELECTRIC_ASHES, hit.collider);
+                    SDK.OnKillRequest?.Invoke(DamageType.ELECTRIC_ASHES, hit.collider);
             }
             
             this._lineRenderer.SetPosition(0, start);
@@ -70,7 +70,16 @@ namespace HyenaQuest
             this._lineRenderer.enabled = isActive;
             this.hitEnd.SetActive(isActive);
         }
-
+        
+        #if UNITY_EDITOR
+        public void OnDrawGizmosSelected() {
+            Gizmos.color = Color.red;
+            Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+            
+            Gizmos.DrawCube(Vector3.zero, Vector3.one * 0.05F);
+            Gizmos.DrawLine(Vector3.zero, transform.forward * 10F);
+        }
+        #endif
         #endregion
     }
 }

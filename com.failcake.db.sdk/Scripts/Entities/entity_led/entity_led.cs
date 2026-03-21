@@ -76,7 +76,7 @@ namespace HyenaQuest
 
             this.UpdateMaterial();
             if (sound)
-                SDK_SETUP.Play3DSoundClip(this.active ? this.enableSnd : this.disableSnd, this.transform.position,
+                SDK.Play3DSoundClip(this.active ? this.enableSnd : this.disableSnd, this.transform.position,
                     new AudioData { distance = this.maxDistance }, false);
         }
 

@@ -14,7 +14,7 @@ namespace HyenaQuest
         public byte minRounds;
         
         public override bool CanSpawn() {
-            byte currentRound = SDK_SETUP.GetCurrentRound?.Invoke() ?? 1;
+            byte currentRound = SDK.GetCurrentRound?.Invoke() ?? 1;
             if (currentRound < this.minRounds) return false;
 
             return Random.Range(0f, 1f) < this.chance;

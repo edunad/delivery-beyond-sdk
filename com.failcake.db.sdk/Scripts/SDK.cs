@@ -8,37 +8,45 @@ namespace HyenaQuest
     /// DO NOT TOUCH THIS, YOU MIGHT BREAK THE GAME.
     /// </summary>
     
-    public static class SDK_SETUP
+    public static class SDK
     {
         #region CLEANUP - DOMAIN RELOAD
 
         #if UNITY_EDITOR
         [RuntimeInitializeOnLoadMethod]
         private static void InitializeOnLoad() {
-            SDK_SETUP.GetCurrentRound = null;
+            SDK.GetCurrentRound = null;
             
-            SDK_SETUP.PreNetworkTemplateSpawn = null;
-            SDK_SETUP.PostNetworkTemplateSpawn = null;
+            SDK.PreNetworkTemplateSpawn = null;
+            SDK.PostNetworkTemplateSpawn = null;
             
-            SDK_SETUP.GetSeed = null;
-            SDK_SETUP.OnRoomSpawn = null;
+            SDK.GetSeed = null;
+            SDK.OnRoomSpawn = null;
             
-            SDK_SETUP.PatchSDKEntity = null;
+            SDK.PatchSDKEntity = null;
             
-            SDK_SETUP.OnDeliverySpotRegister = null;
-            SDK_SETUP.OnDeliverySpotUnregister = null;
+            SDK.OnDeliverySpotRegister = null;
+            SDK.OnDeliverySpotUnregister = null;
             
-            SDK_SETUP.OnKillRequest = null;
-            SDK_SETUP.OnDamageRequest = null;
+            SDK.OnKillRequest = null;
+            SDK.OnDamageRequest = null;
             
-            SDK_SETUP.Play3DSound = null;
-            SDK_SETUP.Play3DSoundClip = null;
-            SDK_SETUP.Play2DSoundClip = null;
-            SDK_SETUP.Play2DSound = null;
+            SDK.Play3DSound = null;
+            SDK.Play3DSoundClip = null;
+            SDK.Play2DSoundClip = null;
+            SDK.Play2DSound = null;
         }
         #endif
 
         #endregion
+        
+        private static Camera _mainCamera;
+        public static Camera MainCamera {
+            get {
+                if (!SDK._mainCamera) SDK._mainCamera = Camera.main;
+                return SDK._mainCamera;
+            }
+        }
         
         // IngameController ---
         public static Func<byte> GetCurrentRound;

@@ -9,7 +9,7 @@ namespace HyenaQuest
     public class entity_sdk_nav_add : MonoBehaviour
     {
         public void Awake() {
-            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
+            SDK.PatchSDKEntity?.Invoke(this.gameObject);
         }
 
         #if UNITY_EDITOR

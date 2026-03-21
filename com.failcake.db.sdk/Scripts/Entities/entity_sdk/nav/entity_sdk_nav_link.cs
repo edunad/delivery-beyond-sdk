@@ -26,7 +26,7 @@ namespace HyenaQuest
         public bool effect = true;
 
         public void Awake() {
-            SDK_SETUP.PatchSDKEntity?.Invoke(this.gameObject);
+            SDK.PatchSDKEntity?.Invoke(this.gameObject);
         }
 
         #if UNITY_EDITOR

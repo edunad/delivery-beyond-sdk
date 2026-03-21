@@ -170,14 +170,14 @@ namespace HyenaQuest
 
         #endregion
         public void Update() {
-            if (!Camera.main) return;
+            if (!SDK.MainCamera) return;
 
             if (Time.time < this._lightTick || this._lights == null) return;
             this._lightTick = Time.time + 0.2F;
 
             foreach (Light l in this._lights)
                 if (l)
-                    l.gameObject.SetActive(this._isVIS || Vector3.Distance(l.transform.position, Camera.main.transform.position) <= 18);
+                    l.gameObject.SetActive(this._isVIS || Vector3.Distance(l.transform.position, SDK.MainCamera.transform.position) <= 18);
         }
 
         public bool IsRoomVisibile() { return this._isVIS; }
@@ -230,7 +230,7 @@ namespace HyenaQuest
             base.OnNetworkPostSpawn();
             if (!this.IsClient) return;
             
-            SDK_SETUP.OnRoomSpawn?.Invoke(this);  // Tell the map controller we're done spawning this room
+            SDK.OnRoomSpawn?.Invoke(this);  // Tell the map controller we're done spawning this room
             
             // HOOKS
             this._combinedLayerData.RegisterOnValueChanged((_, newValue) => {
@@ -453,7 +453,7 @@ namespace HyenaQuest
         #region LAYER-PICKING
         protected virtual void PickLayerData() {
             if (!this.IsServer) throw new UnityException("PickCombinedLayerData can only be called on the server");
-            byte currentRound = SDK_SETUP.GetCurrentRound?.Invoke() ?? 0;
+            byte currentRound = SDK.GetCurrentRound?.Invoke() ?? 0;
 
             byte selectedLayer = 0;
             uint textureData = 0;

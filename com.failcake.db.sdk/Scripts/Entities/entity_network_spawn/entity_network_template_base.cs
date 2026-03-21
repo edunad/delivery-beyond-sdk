@@ -45,12 +45,12 @@ namespace HyenaQuest
             if (!this.IsServer) return (null, null);
             if (!this.template) throw new UnityException("No templates assigned to entity_network_template!");
 
-            if (SDK_SETUP.PreNetworkTemplateSpawn != null) this.template = SDK_SETUP.PreNetworkTemplateSpawn?.Invoke(this.template);
+            if (SDK.PreNetworkTemplateSpawn != null) this.template = SDK.PreNetworkTemplateSpawn?.Invoke(this.template);
 
             GameObject newObj = entity_network_template_base.Instantiate(this.template, this.transform.position, this.transform.rotation);
             if (!newObj) throw new UnityException($"Failed to instantiate template {this.template.name}");
 
-            SDK_SETUP.PostNetworkTemplateSpawn?.Invoke(newObj);
+            SDK.PostNetworkTemplateSpawn?.Invoke(newObj);
 
             // TEMP ----------------
             if (this.flipTest)
