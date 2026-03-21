@@ -24,9 +24,7 @@ namespace HyenaQuest
                 EditorUtility.DisplayDialog("Map Builder", "No WorldSettings assets found in the project.", "OK");
                 return;
             }
-
-            BundleBuilder.CleanOutputFolder();
-
+            
             List<AssetBundleBuild> builds = new List<AssetBundleBuild>();
             Dictionary<string, WorldSettings> settingsMap = new Dictionary<string, WorldSettings>();
 
@@ -70,8 +68,6 @@ namespace HyenaQuest
                 return;
             }
 
-            BundleBuilder.CleanOutputFolder();
-
             string settingsPath = AssetDatabase.GetAssetPath(selected);
             AssetBundleBuild? build = BundleBuilder.CreateBuildForPath(settingsPath);
             if (!build.HasValue) return;
@@ -102,15 +98,6 @@ namespace HyenaQuest
         }
 
         #region PRIVATE
-
-        private static void CleanOutputFolder() {
-            if (Directory.Exists(BundleBuilder.OUTPUT_FOLDER)) Directory.Delete(BundleBuilder.OUTPUT_FOLDER, true);
-        }
-
-        private static AssetBundleBuild? CreateBuildForSettings(string guid) {
-            return BundleBuilder.CreateBuildForPath(AssetDatabase.GUIDToAssetPath(guid));
-        }
-
         private static AssetBundleBuild? CreateBuildForPath(string settingsPath) {
             WorldSettings settings = AssetDatabase.LoadAssetAtPath<WorldSettings>(settingsPath);
             if (!settings)
@@ -170,9 +157,9 @@ namespace HyenaQuest
 
                 string mapFolder = Path.Combine(BundleBuilder.OUTPUT_FOLDER, mapName);
                 string bundlesFolder = Path.Combine(mapFolder, "bundles");
+                
                 Directory.CreateDirectory(bundlesFolder);
 
-                // Move bundle into bundles/
                 string src = Path.Combine(BundleBuilder.OUTPUT_FOLDER, bundleFileName);
                 string dst = Path.Combine(bundlesFolder, bundleFileName);
 
@@ -182,19 +169,15 @@ namespace HyenaQuest
                     File.Move(src, dst);
                 }
 
-                // Clean up manifest
                 string manifestSrc = src + ".manifest";
                 if (File.Exists(manifestSrc)) File.Delete(manifestSrc);
 
-                // Generate mod.json
                 BundleBuilder.GenerateModJson(mapFolder, mapName, settingsMap.GetValueOrDefault(bundleFileName));
 
-                // Generate preview if missing
                 string previewPath = Path.Combine(mapFolder, "preview.png");
                 if (!File.Exists(previewPath)) BundleBuilder.GeneratePreviewImage(previewPath, mapName);
             }
 
-            // Clean up root bundle artifacts
             string rootBundleName = Path.GetFileName(BundleBuilder.OUTPUT_FOLDER);
             string rootBundle = Path.Combine(BundleBuilder.OUTPUT_FOLDER, rootBundleName);
 
@@ -203,10 +186,9 @@ namespace HyenaQuest
         }
 
         private static void GenerateModJson(string mapFolder, string mapName, WorldSettings settings) {
-            string title = settings != null ? settings.name : mapName;
+            string title = settings ? settings.name : mapName;
             string description = $"Custom map: {title}";
 
-            // Escape JSON strings
             title = title.Replace("\\", "\\\\").Replace("\"", "\\\"");
             description = description.Replace("\\", "\\\\").Replace("\"", "\\\"");
 
@@ -241,25 +223,25 @@ namespace HyenaQuest
             }
 
             (Color, Color, Color, Color)[] palettes = {
-                (new Color(0.24f, 0.48f, 0.46f), new Color(0.18f, 0.38f, 0.36f), new Color(0.30f, 0.55f, 0.50f), new Color(0.14f, 0.30f, 0.30f)), // teal
-                (new Color(0.35f, 0.30f, 0.45f), new Color(0.25f, 0.22f, 0.38f), new Color(0.42f, 0.35f, 0.52f), new Color(0.18f, 0.16f, 0.28f)), // mauve
-                (new Color(0.28f, 0.38f, 0.28f), new Color(0.20f, 0.30f, 0.20f), new Color(0.35f, 0.45f, 0.32f), new Color(0.15f, 0.22f, 0.15f)), // forest
-                (new Color(0.40f, 0.34f, 0.28f), new Color(0.30f, 0.26f, 0.20f), new Color(0.48f, 0.40f, 0.32f), new Color(0.22f, 0.18f, 0.14f)), // sand
-                (new Color(0.25f, 0.35f, 0.50f), new Color(0.18f, 0.26f, 0.40f), new Color(0.32f, 0.42f, 0.56f), new Color(0.12f, 0.18f, 0.30f)), // steel
-                (new Color(0.50f, 0.25f, 0.28f), new Color(0.38f, 0.18f, 0.20f), new Color(0.58f, 0.32f, 0.34f), new Color(0.28f, 0.12f, 0.14f)), // brick
-                (new Color(0.45f, 0.38f, 0.50f), new Color(0.30f, 0.25f, 0.42f), new Color(0.52f, 0.44f, 0.58f), new Color(0.20f, 0.15f, 0.30f)), // lavender
-                (new Color(0.22f, 0.42f, 0.50f), new Color(0.15f, 0.30f, 0.45f), new Color(0.28f, 0.50f, 0.55f), new Color(0.10f, 0.22f, 0.35f)), // ocean
-                (new Color(0.48f, 0.40f, 0.22f), new Color(0.38f, 0.32f, 0.16f), new Color(0.55f, 0.48f, 0.28f), new Color(0.26f, 0.22f, 0.10f)), // olive
-                (new Color(0.45f, 0.28f, 0.40f), new Color(0.35f, 0.18f, 0.32f), new Color(0.52f, 0.35f, 0.48f), new Color(0.24f, 0.12f, 0.22f)), // plum
-                (new Color(0.30f, 0.42f, 0.42f), new Color(0.22f, 0.34f, 0.38f), new Color(0.38f, 0.50f, 0.48f), new Color(0.14f, 0.24f, 0.28f)), // slate
-                (new Color(0.50f, 0.35f, 0.22f), new Color(0.40f, 0.28f, 0.16f), new Color(0.58f, 0.42f, 0.28f), new Color(0.30f, 0.20f, 0.10f)), // rust
-                (new Color(0.20f, 0.35f, 0.30f), new Color(0.14f, 0.28f, 0.24f), new Color(0.26f, 0.42f, 0.36f), new Color(0.08f, 0.20f, 0.16f)), // moss
-                (new Color(0.38f, 0.32f, 0.42f), new Color(0.28f, 0.24f, 0.35f), new Color(0.46f, 0.38f, 0.50f), new Color(0.18f, 0.16f, 0.25f)), // dusk
-                (new Color(0.42f, 0.42f, 0.35f), new Color(0.32f, 0.32f, 0.26f), new Color(0.50f, 0.50f, 0.42f), new Color(0.22f, 0.22f, 0.18f)) // stone
+                (new Color(0.24f, 0.48f, 0.46f), new Color(0.18f, 0.38f, 0.36f), new Color(0.30f, 0.55f, 0.50f), new Color(0.14f, 0.30f, 0.30f)),
+                (new Color(0.35f, 0.30f, 0.45f), new Color(0.25f, 0.22f, 0.38f), new Color(0.42f, 0.35f, 0.52f), new Color(0.18f, 0.16f, 0.28f)),
+                (new Color(0.28f, 0.38f, 0.28f), new Color(0.20f, 0.30f, 0.20f), new Color(0.35f, 0.45f, 0.32f), new Color(0.15f, 0.22f, 0.15f)),
+                (new Color(0.40f, 0.34f, 0.28f), new Color(0.30f, 0.26f, 0.20f), new Color(0.48f, 0.40f, 0.32f), new Color(0.22f, 0.18f, 0.14f)),
+                (new Color(0.25f, 0.35f, 0.50f), new Color(0.18f, 0.26f, 0.40f), new Color(0.32f, 0.42f, 0.56f), new Color(0.12f, 0.18f, 0.30f)),
+                (new Color(0.50f, 0.25f, 0.28f), new Color(0.38f, 0.18f, 0.20f), new Color(0.58f, 0.32f, 0.34f), new Color(0.28f, 0.12f, 0.14f)),
+                (new Color(0.45f, 0.38f, 0.50f), new Color(0.30f, 0.25f, 0.42f), new Color(0.52f, 0.44f, 0.58f), new Color(0.20f, 0.15f, 0.30f)),
+                (new Color(0.22f, 0.42f, 0.50f), new Color(0.15f, 0.30f, 0.45f), new Color(0.28f, 0.50f, 0.55f), new Color(0.10f, 0.22f, 0.35f)),
+                (new Color(0.48f, 0.40f, 0.22f), new Color(0.38f, 0.32f, 0.16f), new Color(0.55f, 0.48f, 0.28f), new Color(0.26f, 0.22f, 0.10f)),
+                (new Color(0.45f, 0.28f, 0.40f), new Color(0.35f, 0.18f, 0.32f), new Color(0.52f, 0.35f, 0.48f), new Color(0.24f, 0.12f, 0.22f)),
+                (new Color(0.30f, 0.42f, 0.42f), new Color(0.22f, 0.34f, 0.38f), new Color(0.38f, 0.50f, 0.48f), new Color(0.14f, 0.24f, 0.28f)),
+                (new Color(0.50f, 0.35f, 0.22f), new Color(0.40f, 0.28f, 0.16f), new Color(0.58f, 0.42f, 0.28f), new Color(0.30f, 0.20f, 0.10f)),
+                (new Color(0.20f, 0.35f, 0.30f), new Color(0.14f, 0.28f, 0.24f), new Color(0.26f, 0.42f, 0.36f), new Color(0.08f, 0.20f, 0.16f)),
+                (new Color(0.38f, 0.32f, 0.42f), new Color(0.28f, 0.24f, 0.35f), new Color(0.46f, 0.38f, 0.50f), new Color(0.18f, 0.16f, 0.25f)),
+                (new Color(0.42f, 0.42f, 0.35f), new Color(0.32f, 0.32f, 0.26f), new Color(0.50f, 0.50f, 0.42f), new Color(0.22f, 0.22f, 0.18f)) 
             };
 
             (Color c0, Color c1, Color c2, Color c3) = palettes[Rand() % (uint)palettes.Length];
-            int gradType = (int)(Rand() % 5); // 0=vertical, 1=horizontal, 2=diagonal, 3=radial, 4=corner
+            int gradType = (int)(Rand() % 5);
 
             float[] bayer = {
                 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5
@@ -286,22 +268,22 @@ namespace HyenaQuest
                     float d = bayer[y % 4 * 4 + x % 4];
                     col = Color.Lerp(col, c3, d > 0.5f + t * 0.3f ? 0.3f : 0f);
 
-                    // Grid
                     if (x % 32 == 0 || y % 32 == 0) col = Color.Lerp(col, c2, 0.15f);
 
-                    // Quantize
                     col.r = Mathf.Round(col.r * 32f) / 32f;
                     col.g = Mathf.Round(col.g * 32f) / 32f;
                     col.b = Mathf.Round(col.b * 32f) / 32f;
+                    
                     px[y * S + x] = col;
                 }
 
-            // Pixel font text
             string text = seed.Replace("_", " ").Replace("-", " ").ToUpperInvariant();
+            
             int sc = text.Length > 12 ? 3 : 4;
             int tw = text.Length * 6 * sc - sc;
             int tx = (S - tw) / 2;
             int ty = (S - 7 * sc) / 2;
+            
             Color tCol = Color.Lerp(c2, Color.white, 0.6f);
             Color sCol = new Color(0, 0, 0, 0.4f);
 
@@ -340,7 +322,6 @@ namespace HyenaQuest
             Object.DestroyImmediate(tex);
         }
 
-        // 5x7 pixel font — each byte is a row, 5 bits wide (MSB = left)
         private static byte[] GetGlyph(char c) {
             return c switch {
                 'A'   => new byte[] { 0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x11 },

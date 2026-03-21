@@ -45,6 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FailCake.VIS::FailCake.VIS.entity_vis_portal_2d
   open: 1
-  size: {x: 3.32, y: 2.5, z: 1}
+  size: {x: 5, y: 3.29, z: 1}
   RoomA: {fileID: 0}
   RoomB: {fileID: 0}

@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9bd99aad33c4d6cb736d8d26f4fd8c6, type: 3}
   m_Name: YeenRooms
   m_EditorClassIdentifier: HyenaQuest.SDK::HyenaQuest.WorldSettings
-  uniqueName: SampleWorld
   minRounds: 1
   weight: 1
   collisionChecks: 1
@@ -126,10 +125,10 @@ MonoBehaviour:
     density: 0.09
   musicVolume: 0.1
   heistMusic:
-  - {fileID: 8300000, guid: 0308a71bfa86d1d489be091c3f4a56a6, type: 3}
+  - {fileID: 8300000, guid: 87da86b6588727f47b9888748fdfd4dd, type: 3}
   skyMaterial: {fileID: 0}
   entry:
-  - template: {fileID: 1892517844433793302, guid: 601ff38203f66374a980c5b3939922b3, type: 3}
+  - template: {fileID: 1509499890597038171, guid: 601ff38203f66374a980c5b3939922b3, type: 3}
     settings:
       exterior: 0
       doorOpenAngle: {x: 0, y: 0, z: 0}
@@ -139,20 +138,21 @@ MonoBehaviour:
         angle: {x: 0, y: 0, z: 0}
         color: {r: 0, g: 0, b: 0, a: 0}
   closers:
-  - {fileID: 7657768007210905139, guid: 672e30e0084a19b45b8136b820eb42be, type: 3}
+  - {fileID: 8798753738726240439, guid: bcbc8d415ed013c4895b7d1b0a7a0a1a, type: 3}
   interiorClosers:
-  - {fileID: 7657768007210905139, guid: 672e30e0084a19b45b8136b820eb42be, type: 3}
+  - {fileID: 8798753738726240439, guid: bcbc8d415ed013c4895b7d1b0a7a0a1a, type: 3}
   interiors:
-  - {fileID: 6019724615188321957, guid: a7e365ff0df576749a969bbf58d27dbf, type: 3}
+  - {fileID: 8062563392709951171, guid: a7e365ff0df576749a969bbf58d27dbf, type: 3}
   rooms:
-  - {fileID: 5554393771021163065, guid: 90559b23e1b9af344abc677c37d65864, type: 3}
-  - {fileID: 1362928613442653796, guid: b3e6784127708f84f92364ab6a187094, type: 3}
+  - {fileID: 4726436763789535798, guid: 90559b23e1b9af344abc677c37d65864, type: 3}
+  - {fileID: 4823410264130135591, guid: a8e8ec602d05fff4cb4692a74af0e8c8, type: 3}
+  - {fileID: 8344886453524426405, guid: cde2cc9df13c6314f99c8dd4e493784a, type: 3}
   traversal: []
   deadEnds: []
   extraNetworkObjects:
   - {fileID: 652149422231537406, guid: 5afa48041571a3c4e8a00543ab4d8961, type: 3}
   - {fileID: 1578548330222871214, guid: 7a5fd32f743d425499ea3b709f6d45a0, type: 3}
-  - {fileID: 635132975131106632, guid: 8e06251555c7dea45ba8a87dc9ae7078, type: 3}
+  - {fileID: 3830048114011381159, guid: 8e06251555c7dea45ba8a87dc9ae7078, type: 3}
   references:
     version: 2
     RefIds: []

@@ -9,7 +9,7 @@
         "com.failcake.vmf.importer": "1.0.0",
         "com.failcake.timers": "0.0.1"
       },
-      "hash": "bc884945044561a0acb3197f103e0786f738ae35"
+      "hash": "f22a4f6a7adc27b50794542f94cabb92c06647a4"
     },
     "com.failcake.timers": {
       "version": "https://github.com/edunad/FailCake.Timers.git?path=/com.failcake.timers",
@@ -32,7 +32,7 @@
       "dependencies": {
         "com.whinarn.unitymeshsimplifier": "3.1.0"
       },
-      "hash": "703a288517f11e6c565d9f43e0a619d20070958d"
+      "hash": "1bab659fbd9b672a54248a162925b28a5ce3860d"
     },
     "com.github-glitchenzo.nugetforunity": {
       "version": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",

@@ -77,7 +77,7 @@ namespace HyenaQuest
             Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
             
             Gizmos.DrawCube(Vector3.zero, Vector3.one * 0.05F);
-            Gizmos.DrawLine(Vector3.zero, transform.forward * 10F);
+            Gizmos.DrawLine(Vector3.zero, Vector3.forward * 10F);
         }
         #endif
         #endregion
