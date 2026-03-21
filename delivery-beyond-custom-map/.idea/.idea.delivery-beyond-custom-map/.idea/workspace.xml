@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="efd666a1-8ac7-4b65-9154-d09a9edaa05c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/MODS/SampleWorld/entry-0.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MODS/SampleWorld/entry-0.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MODS/Yeenrooms/entry-0.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MODS/Yeenrooms/entry-0.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MODS/Yeenrooms/x-shape-0.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MODS/Yeenrooms/x-shape-0.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/SDK/Scripts/Editor/BundleBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/SDK/Scripts/Editor/BundleBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/SDK/Settings/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/SDK/Settings/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/GraphicsSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/GraphicsSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,18 +18,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "edunad"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;edunad&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/edunad/delivery-beyond-sdk.git",
-    "accountId": "d87a701f-b4a9-4152-ad51-2117c58fb992"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/edunad/delivery-beyond-sdk.git&quot;,
+    &quot;accountId&quot;: &quot;d87a701f-b4a9-4152-ad51-2117c58fb992&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -34,16 +38,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "settings.editor.selected.configurable": "preferences.sourceCode"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="D:\Program Files\Unity\6000.4.0f1\Editor\Unity.exe" />
@@ -95,6 +99,7 @@
       <workItem from="1774014299852" duration="1000" />
       <workItem from="1774015519395" duration="4413000" />
       <workItem from="1774023568393" duration="5499000" />
+      <workItem from="1774108017870" duration="3218000" />
     </task>
     <servers />
   </component>

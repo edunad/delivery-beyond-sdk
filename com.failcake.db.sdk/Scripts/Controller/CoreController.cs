@@ -56,6 +56,16 @@ namespace HyenaQuest
         private static readonly Dictionary<Type, List<Delegate>> _pendingCallbacks = new Dictionary<Type, List<Delegate>>();
 
         #endregion
+        
+        #region CLEANUP - DOMAIN RELOAD
+        #if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void InitializeOnLoad() {
+            CoreController._controllers.Clear();
+            CoreController._pendingCallbacks.Clear();
+        }
+        #endif
+        #endregion
 
         public void Awake() {
             CoreController.DontDestroyOnLoad(this.gameObject);

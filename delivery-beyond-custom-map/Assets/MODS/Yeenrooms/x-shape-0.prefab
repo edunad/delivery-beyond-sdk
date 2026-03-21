@@ -1110,6 +1110,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 901671951478543814}
     m_Modifications:
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4075106329085522883, guid: baa4149b75d55d947857ea29e796d971, type: 3}
       propertyPath: m_Name
       value: LIGHT
@@ -1501,8 +1509,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: HyenaQuest.SDK::HyenaQuest.entity_room
   ShowTopMostFoldoutHeaderGroup: 1
   _BOUNDS_:
-    m_Center: {x: 8.117999, y: 1.7599998, z: -0.0000009536743}
-    m_Extent: {x: 8.118, y: 1.7600002, z: 8.205999}
+    m_Center: {x: 8.117999, y: 1.76, z: -0.0000009536743}
+    m_Extent: {x: 8.118, y: 1.7600005, z: 8.205999}
   layers:
   - layer: {fileID: 3205024315951522377}
     weight: 1
@@ -1555,6 +1563,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 901671951478543814}
     m_Modifications:
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4075106329085522883, guid: baa4149b75d55d947857ea29e796d971, type: 3}
       propertyPath: m_Name
       value: LIGHT (3)
@@ -1617,6 +1633,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 901671951478543814}
     m_Modifications:
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4075106329085522883, guid: baa4149b75d55d947857ea29e796d971, type: 3}
       propertyPath: m_Name
       value: LIGHT (2)
@@ -1745,6 +1769,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 901671951478543814}
     m_Modifications:
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 1862619117552643894, guid: baa4149b75d55d947857ea29e796d971, type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4075106329085522883, guid: baa4149b75d55d947857ea29e796d971, type: 3}
       propertyPath: m_Name
       value: LIGHT (1)
