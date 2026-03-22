@@ -20,7 +20,7 @@ namespace HyenaQuest
         private const string OUTPUT_FOLDER = "Build";
 
         private static readonly string[] SHADER_EXTENSIONS = {
-            ".shader", ".shadergraph", ".shadersubgraph", ".hlsl"
+            ".shader", ".shadergraph", ".shadersubgraph"
         };
 
         private static readonly (BuildTarget target, string folder)[] PLATFORMS = {
@@ -43,15 +43,13 @@ namespace HyenaQuest
 
             foreach (string guid in guids)
             {
-                string settingsPath = AssetDatabase.GUIDToAssetPath(guid);
-                WorldSettings settings = AssetDatabase.LoadAssetAtPath<WorldSettings>(settingsPath);
-                (AssetBundleBuild? content, AssetBundleBuild? shaders) = BundleBuilder.CreateBuildsForPath(settingsPath);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                WorldSettings settings = AssetDatabase.LoadAssetAtPath<WorldSettings>(path);
+                (AssetBundleBuild? content, AssetBundleBuild? shaders) = BundleBuilder.CreateBuildsForPath(path);
 
-                if (content.HasValue && settings)
-                {
+                if (content.HasValue && settings) {
                     contentBuilds.Add(content.Value);
                     settingsMap[content.Value.assetBundleName] = settings;
-
                     if (shaders.HasValue) shaderBuilds.Add(shaders.Value);
                 }
             }
@@ -64,7 +62,7 @@ namespace HyenaQuest
 
             BundleBuilder.BuildBundles(contentBuilds, shaderBuilds);
             BundleBuilder.OrganizeAndCleanup(contentBuilds, shaderBuilds, settingsMap);
-            
+
             Debug.Log($"Built {contentBuilds.Count} map bundle(s) for {BundleBuilder.PLATFORMS.Length} platform(s) to {Path.GetFullPath(BundleBuilder.OUTPUT_FOLDER)}/");
         }
 
@@ -95,7 +93,7 @@ namespace HyenaQuest
             BundleBuilder.OrganizeAndCleanup(contentBuilds, shaderBuilds, settingsMap);
 
             string mapName = Path.GetFileNameWithoutExtension(content.Value.assetBundleName);
-            
+
             Debug.Log($"[MapBuilder] Built: {mapName} for {BundleBuilder.PLATFORMS.Length} platform(s)");
             EditorUtility.RevealInFinder(Path.Combine(BundleBuilder.OUTPUT_FOLDER, mapName));
         }
@@ -106,31 +104,65 @@ namespace HyenaQuest
         }
 
         #region PRIVATE
+        private static string GenerateShaderVariantCollection(string mapName, IEnumerable<string> shaderPaths)
+        {
+            string svcPath = $"Assets/__Generated/{mapName}_AutoSVC.shadervariants";
+            
+            Directory.CreateDirectory("Assets/__Generated");
+            
+            ShaderVariantCollection svc = new ShaderVariantCollection();
+            foreach (string path in shaderPaths)
+            {
+                Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (!mat) continue;
 
+                Shader shader = mat.shader;
+                if (!shader) continue;
+
+                string[] keywords = mat.shaderKeywords;
+                try
+                {
+                    ShaderVariantCollection.ShaderVariant variant = new ShaderVariantCollection.ShaderVariant(
+                        shader,
+                        PassType.Normal,
+                        keywords
+                    );
+
+                    svc.Add(variant);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            
+            AssetDatabase.CreateAsset(svc, svcPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            return svcPath;
+        }
+        
         private static (AssetBundleBuild? content, AssetBundleBuild? shaders) CreateBuildsForPath(string settingsPath) {
             WorldSettings settings = AssetDatabase.LoadAssetAtPath<WorldSettings>(settingsPath);
-            if (!settings)
-            {
-                Debug.LogWarning($"Could not load WorldSettings at: {settingsPath}");
-                return (null, null);
-            }
+            if (!settings) return (null, null);
 
             string mapFolder = Path.GetDirectoryName(settingsPath)!.Replace("\\", "/");
             string bundleName = Path.GetFileName(mapFolder).ToLowerInvariant();
 
-            (string[] contentAssets, string[] shaderAssets) = BundleBuilder.CollectFolderAssets(mapFolder);
-            if (contentAssets.Length == 0 && shaderAssets.Length == 0)
+            (string[] contentAssets, string[] shaderAssets) = CollectFolderAssets(mapFolder);
+            
+            string svcPath = BundleBuilder.GenerateShaderVariantCollection(bundleName, contentAssets.Concat(shaderAssets));
+            if (!string.IsNullOrEmpty(svcPath))
             {
-                Debug.LogWarning($"No assets found in: {mapFolder}");
-                return (null, null);
+                List<string> shaderList = shaderAssets.ToList();
+                shaderList.Add(svcPath);
+                shaderAssets = shaderList.ToArray();
             }
-
-            Debug.Log($"Queued: {bundleName} ({contentAssets.Length} content, {shaderAssets.Length} shader assets from {mapFolder}/)");
-            string[] allAssets = contentAssets.Concat(shaderAssets).Distinct().ToArray();
-
+            
             AssetBundleBuild contentBuild = new AssetBundleBuild {
                 assetBundleName = $"{bundleName}.bundle",
-                assetNames = allAssets
+                assetNames = contentAssets
             };
 
             AssetBundleBuild? shaderBuild = shaderAssets.Length > 0
@@ -145,96 +177,87 @@ namespace HyenaQuest
 
         private static (string[] content, string[] shaders) CollectFolderAssets(string folderPath) {
             HashSet<string> allAssets = new HashSet<string>();
-
             string[] guids = AssetDatabase.FindAssets("", new[] { folderPath });
-            foreach (string guid in guids)
-            {
+            
+            foreach (string guid in guids) {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (AssetDatabase.IsValidFolder(path)) continue;
-                if (path.EndsWith(".cs")) continue;
-
+                if (AssetDatabase.IsValidFolder(path) || path.EndsWith(".cs")) continue;
                 allAssets.Add(path);
             }
 
-            string[] folderAssets = allAssets.ToArray();
-            foreach (string asset in folderAssets)
-                foreach (string dep in AssetDatabase.GetDependencies(asset, true))
-                {
+            foreach (string asset in allAssets.ToArray()) {
+                foreach (string dep in AssetDatabase.GetDependencies(asset, true)) {
                     if (dep.EndsWith(".cs")) continue;
-                    if (dep.StartsWith("Packages/")) continue;
-
+                    if (dep.StartsWith("Packages/") && !BundleBuilder.IsShaderAsset(dep)) continue;
+                    
                     allAssets.Add(dep);
                 }
+            }
 
             HashSet<string> shaderSet = new HashSet<string>();
             HashSet<string> contentSet = new HashSet<string>();
 
-            foreach (string asset in allAssets)
-                if (BundleBuilder.IsShaderAsset(asset))
-                    shaderSet.Add(asset);
-                else
-                    contentSet.Add(asset);
+            foreach (string asset in allAssets) {
+                if (BundleBuilder.IsShaderAsset(asset)) shaderSet.Add(asset);
+                else contentSet.Add(asset);
+            }
 
             return (contentSet.ToArray(), shaderSet.ToArray());
         }
 
         private static bool IsShaderAsset(string path) {
-            foreach (string ext in BundleBuilder.SHADER_EXTENSIONS)
-                if (path.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
-                    return true;
-
-            return false;
+            return BundleBuilder.SHADER_EXTENSIONS.Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                   || path.EndsWith(".shadervariants", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void BuildBundles(List<AssetBundleBuild> contentBuilds, List<AssetBundleBuild> shaderBuilds) {
-            // SETUP GRAPHICS --------
-            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64, false);
-            PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64, new[] {
-                GraphicsDeviceType.Direct3D11
-            });
-            
-            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneLinux64, false);
-            PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneLinux64, new[] {
-                GraphicsDeviceType.Vulkan
-            });
-            // -------------------------
-            
-            if (contentBuilds.Count > 0)
-            {
-                string contentStaging = Path.Combine(BundleBuilder.OUTPUT_FOLDER, "_staging_content");
-                Directory.CreateDirectory(contentStaging);
+            BuildTarget originalTarget = EditorUserBuildSettings.activeBuildTarget;
+            BuildTargetGroup originalGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+
+            List<AssetBundleBuild> allBuilds = new List<AssetBundleBuild>();
+            allBuilds.AddRange(contentBuilds);
+            allBuilds.AddRange(shaderBuilds);
+
+            HashSet<string> shaderAssetPaths = new HashSet<string>();
+            foreach (AssetBundleBuild sb in shaderBuilds)
+                foreach (string asset in sb.assetNames)
+                    shaderAssetPaths.Add(asset);
+
+            foreach ((BuildTarget target, string folder) in BundleBuilder.PLATFORMS) {
+                PlayerSettings.SetUseDefaultGraphicsAPIs(target, false);
+                PlayerSettings.SetGraphicsAPIs(target, target == BuildTarget.StandaloneLinux64
+                    ? new[] { GraphicsDeviceType.Vulkan }
+                    : new[] { GraphicsDeviceType.Direct3D11 });
+
+                BuildTargetGroup group = BuildPipeline.GetBuildTargetGroup(target);
+                EditorUserBuildSettings.SwitchActiveBuildTarget(group, target);
+
+                AssetDatabase.SaveAssets();
+                
+                foreach (string shaderPath in shaderAssetPaths)
+                    AssetDatabase.ImportAsset(shaderPath, ImportAssetOptions.ForceUpdate);
+                AssetDatabase.Refresh();
+
+                string stagingDir = Path.Combine(OUTPUT_FOLDER, $"_staging_{folder}");
+                if (Directory.Exists(stagingDir)) Directory.Delete(stagingDir, true);
+                Directory.CreateDirectory(stagingDir);
 
                 BuildPipeline.BuildAssetBundles(
-                    contentStaging,
-                    contentBuilds.ToArray(),
-                    BuildAssetBundleOptions.ForceRebuildAssetBundle,
-                    BundleBuilder.PLATFORMS[0].target
+                    stagingDir,
+                    allBuilds.ToArray(),
+                    BuildAssetBundleOptions.ForceRebuildAssetBundle | BuildAssetBundleOptions.StrictMode,
+                    target
                 );
-
-                Debug.Log("[MapBuilder] Built shared content bundles");
             }
 
-            // Platform-specific shader bundles
-            if (shaderBuilds.Count > 0)
-                foreach ((BuildTarget target, string folder) in BundleBuilder.PLATFORMS)
-                {
-                    string shaderStaging = Path.Combine(BundleBuilder.OUTPUT_FOLDER, $"_staging_shaders_{folder}");
-                    Directory.CreateDirectory(shaderStaging);
-
-                    BuildPipeline.BuildAssetBundles(
-                        shaderStaging,
-                        shaderBuilds.ToArray(),
-                        BuildAssetBundleOptions.ForceRebuildAssetBundle,
-                        target
-                    );
-
-                    Debug.Log($"[MapBuilder] Built shader bundles for {target}");
-                }
+            EditorUserBuildSettings.SwitchActiveBuildTarget(originalGroup, originalTarget);
         }
 
         private static void OrganizeAndCleanup(List<AssetBundleBuild> contentBuilds, List<AssetBundleBuild> shaderBuilds, Dictionary<string, WorldSettings> settingsMap) {
             HashSet<string> shaderBundleNames = new HashSet<string>();
             foreach (AssetBundleBuild sb in shaderBuilds) shaderBundleNames.Add(sb.assetBundleName);
+
+            string firstPlatformFolder = BundleBuilder.PLATFORMS[0].folder;
 
             foreach (AssetBundleBuild build in contentBuilds)
             {
@@ -245,21 +268,16 @@ namespace HyenaQuest
 
                 Directory.CreateDirectory(bundlesFolder);
 
-                // Move shared content bundle
-                string contentStaging = Path.Combine(BundleBuilder.OUTPUT_FOLDER, "_staging_content");
-                string contentSrc = Path.Combine(contentStaging, bundleFileName);
+                string firstStaging = Path.Combine(BundleBuilder.OUTPUT_FOLDER, $"_staging_{firstPlatformFolder}");
+                string contentSrc = Path.Combine(firstStaging, bundleFileName);
                 string contentDst = Path.Combine(bundlesFolder, bundleFileName);
 
                 if (File.Exists(contentSrc))
                 {
                     if (File.Exists(contentDst)) File.Delete(contentDst);
-                    File.Move(contentSrc, contentDst);
+                    File.Copy(contentSrc, contentDst);
                 }
 
-                string contentManifest = contentSrc + ".manifest";
-                if (File.Exists(contentManifest)) File.Delete(contentManifest);
-
-                // Move per-platform shader bundles
                 string shaderBundleName = $"{mapName}_shaders.bundle";
                 if (shaderBundleNames.Contains(shaderBundleName))
                     foreach ((BuildTarget _, string platformFolder) in BundleBuilder.PLATFORMS)
@@ -267,7 +285,7 @@ namespace HyenaQuest
                         string platformDir = Path.Combine(bundlesFolder, platformFolder);
                         Directory.CreateDirectory(platformDir);
 
-                        string shaderStaging = Path.Combine(BundleBuilder.OUTPUT_FOLDER, $"_staging_shaders_{platformFolder}");
+                        string shaderStaging = Path.Combine(BundleBuilder.OUTPUT_FOLDER, $"_staging_{platformFolder}");
                         string shaderSrc = Path.Combine(shaderStaging, shaderBundleName);
                         string shaderDst = Path.Combine(platformDir, shaderBundleName);
 
@@ -287,18 +305,19 @@ namespace HyenaQuest
                 if (!File.Exists(previewPath)) BundleBuilder.GeneratePreviewImage(previewPath, mapName);
             }
 
-            // Clean up staging dirs
-            string contentStagingDir = Path.Combine(BundleBuilder.OUTPUT_FOLDER, "_staging_content");
-            if (Directory.Exists(contentStagingDir)) Directory.Delete(contentStagingDir, true);
-
+            // Clean up -----------------------------
             foreach ((BuildTarget _, string platformFolder) in BundleBuilder.PLATFORMS)
             {
-                string shaderStagingDir = Path.Combine(BundleBuilder.OUTPUT_FOLDER, $"_staging_shaders_{platformFolder}");
-                if (Directory.Exists(shaderStagingDir)) Directory.Delete(shaderStagingDir, true);
+                string stagingDir = Path.Combine(BundleBuilder.OUTPUT_FOLDER, $"_staging_{platformFolder}");
+                if (Directory.Exists(stagingDir)) Directory.Delete(stagingDir, true);
             }
+            // -----------------
         }
 
         private static void GenerateModJson(string mapFolder, string mapName, WorldSettings settings) {
+            string path = Path.Combine(mapFolder, "mod.json");
+            if (File.Exists(path)) return;
+            
             string title = settings ? settings.name : mapName;
             string description = $"Custom map: {title}";
 
@@ -314,7 +333,6 @@ namespace HyenaQuest
                           "    \"tags\": [\"MAP\"]\n" +
                           "}";
 
-            string path = Path.Combine(mapFolder, "mod.json");
             File.WriteAllText(path, json);
             Debug.Log($"[MapBuilder] Generated: {path}");
         }

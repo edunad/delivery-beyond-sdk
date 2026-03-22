@@ -1524,38 +1524,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -3051805867153386228, guid: 883fb100a3f4b5f47be9d281e3f64ca0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2804091230387963326}
-    - targetCorrespondingSourceObject: {fileID: -3051805867153386228, guid: 883fb100a3f4b5f47be9d281e3f64ca0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7862662211088324620}
-    - targetCorrespondingSourceObject: {fileID: 7856748184665365282, guid: 883fb100a3f4b5f47be9d281e3f64ca0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7555044407130143066}
   m_SourcePrefab: {fileID: -1573793469395249972, guid: 883fb100a3f4b5f47be9d281e3f64ca0, type: 3}
 --- !u!4 &3430983615738367662 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1574985947971364193, guid: 883fb100a3f4b5f47be9d281e3f64ca0, type: 3}
   m_PrefabInstance: {fileID: 4199100927058504655}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &6291232718642049261 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7856748184665365282, guid: 883fb100a3f4b5f47be9d281e3f64ca0, type: 3}
-  m_PrefabInstance: {fileID: 4199100927058504655}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7555044407130143066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6291232718642049261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e829c87dc2a2ed2419c5f67848317fe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SteamAudioUnity::SteamAudio.SteamAudioGeometry
-  material: {fileID: 11400000, guid: a086f686223eed942816c70be67841b0, type: 2}
-  exportAllChildren: 0
-  terrainSimplificationLevel: 0
 --- !u!1 &8062563392709951171 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3051805867153386228, guid: 883fb100a3f4b5f47be9d281e3f64ca0, type: 3}
@@ -1636,16 +1610,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 791009efb3b34e01bb742bbb1d906de7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FailCake.VIS::FailCake.VIS.entity_vis_room
---- !u!114 &7862662211088324620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8062563392709951171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb43d10a308b2f46ad4561774f97e52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SteamAudioUnity::SteamAudio.SteamAudioDynamicObject
-  asset: {fileID: 11400000, guid: 33236cd8e181f474990356b9bc7d23e7, type: 2}

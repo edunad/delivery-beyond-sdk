@@ -71,33 +71,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7628769274753756317, guid: eb936cf0bd43f76458fa3ee94220750f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1896843092961111243}
-    - targetCorrespondingSourceObject: {fileID: 7628769274753756317, guid: eb936cf0bd43f76458fa3ee94220750f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5978191480004830929}
-    - targetCorrespondingSourceObject: {fileID: 2580852824086021928, guid: eb936cf0bd43f76458fa3ee94220750f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8663951553863719383}
   m_SourcePrefab: {fileID: -7600853904253903027, guid: eb936cf0bd43f76458fa3ee94220750f, type: 3}
---- !u!1 &3464571227543198466 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2580852824086021928, guid: eb936cf0bd43f76458fa3ee94220750f, type: 3}
-  m_PrefabInstance: {fileID: 1424728290118491178}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &8663951553863719383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3464571227543198466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e829c87dc2a2ed2419c5f67848317fe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SteamAudioUnity::SteamAudio.SteamAudioGeometry
-  material: {fileID: 11400000, guid: a086f686223eed942816c70be67841b0, type: 2}
-  exportAllChildren: 0
-  terrainSimplificationLevel: 0
 --- !u!1 &8798753738726240439 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7628769274753756317, guid: eb936cf0bd43f76458fa3ee94220750f, type: 3}
@@ -142,16 +116,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: HyenaQuest.SDK::HyenaQuest.entity_room_closure
   ShowTopMostFoldoutHeaderGroup: 1
   biomeID: 
---- !u!114 &5978191480004830929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8798753738726240439}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb43d10a308b2f46ad4561774f97e52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SteamAudioUnity::SteamAudio.SteamAudioDynamicObject
-  asset: {fileID: 11400000, guid: e77c24cbd079de9408d5b55a09e8f41b, type: 2}
