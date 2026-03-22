@@ -13,16 +13,6 @@ namespace HyenaQuest
         MICROPHONE,
         MASTER
     }
-    
-    [Flags, Serializable]
-    public enum SoundFlags
-    {
-        NONE = 1,
-
-        REFLECTION = 1 << 0,
-        AIR_RESISTANT = 1 << 1,
-        OCCLUSION = 1 << 2
-    }
 
     [Serializable]
     public class AudioData : INetworkSerializable
@@ -30,8 +20,6 @@ namespace HyenaQuest
         public float pitch = 1;
         public float volume = 1;
         public float distance = 5;
-
-        public SoundFlags flags;
 
         public NetworkBehaviourReference parent;
         public SoundMixer mixer = SoundMixer.SFX;
@@ -41,11 +29,11 @@ namespace HyenaQuest
 
             AudioData other = (AudioData)obj;
             return Mathf.Approximately(this.pitch, other.pitch) && Mathf.Approximately(this.volume, other.volume) && Mathf.Approximately(this.distance, other.distance) &&
-                   this.flags == other.flags && this.mixer == other.mixer && this.parent.Equals(other.parent);
+                   this.mixer == other.mixer && this.parent.Equals(other.parent);
         }
 
         public override int GetHashCode() {
-            return HashCode.Combine(this.pitch, this.volume, this.distance, this.flags, this.parent, (int)this.mixer);
+            return HashCode.Combine(this.pitch, this.volume, this.distance, this.parent, (int)this.mixer);
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
@@ -57,8 +45,6 @@ namespace HyenaQuest
                 reader.ReadValueSafe(out this.volume);
                 reader.ReadValueSafe(out this.distance);
 
-                reader.ReadValueSafe(out this.flags);
-
                 reader.ReadValueSafe(out this.mixer);
                 reader.ReadValueSafe(out this.parent);
             }
@@ -69,9 +55,7 @@ namespace HyenaQuest
                 writer.WriteValueSafe(this.pitch);
                 writer.WriteValueSafe(this.volume);
                 writer.WriteValueSafe(this.distance);
-
-                writer.WriteValueSafe(this.flags);
-
+                
                 writer.WriteValueSafe(this.mixer);
                 writer.WriteValueSafe(this.parent);
             }
