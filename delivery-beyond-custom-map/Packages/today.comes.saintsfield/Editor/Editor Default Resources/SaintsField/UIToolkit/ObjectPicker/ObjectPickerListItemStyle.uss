@@ -1,3 +1,0 @@
-#saints-field-object-picker-list-item-button.pressed {
-    background-color: var(--unity-colors-button-background-pressed);
-}

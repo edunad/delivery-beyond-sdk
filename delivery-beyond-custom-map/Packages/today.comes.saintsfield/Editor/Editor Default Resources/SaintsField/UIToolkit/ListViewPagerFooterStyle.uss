@@ -1,8 +1,0 @@
-:root {
-    flex-direction: row;
-    align-self: flex-end;
-}
-
-#PagingContainer {
-    margin-right: 2;
-}
