@@ -97,11 +97,15 @@ namespace HyenaQuest
             // ----------------------------
 
             // Setup mesh renderers ---
+            uint decalMask = RenderingLayerMask.GetMask("RecieveDecals");
+            
             MeshRenderer[] meshRenderers = this.GetComponentsInChildren<MeshRenderer>(true);
             foreach (MeshRenderer meshRenderer in meshRenderers)
             {
                 if (!meshRenderer) continue;
+                
                 meshRenderer.staticShadowCaster = true;
+                meshRenderer.renderingLayerMask = decalMask;
             }
             // ---------------
 
@@ -208,17 +212,6 @@ namespace HyenaQuest
                     if (active) this._lightTick = Time.time; // Force light check
                 };
             }
-            
-            // FIX DECALS --
-            uint decalMask = RenderingLayerMask.GetMask("RecieveDecals");
-            
-            MeshRenderer[] meshRenderers = this.GetComponentsInChildren<MeshRenderer>(true);
-            foreach (MeshRenderer meshRenderer in meshRenderers)
-            {
-                if (!meshRenderer) continue;
-                meshRenderer.renderingLayerMask = decalMask;
-            }
-            // -----------
             
             if (!this.IsServer) return;
             this.PickLayerData();
