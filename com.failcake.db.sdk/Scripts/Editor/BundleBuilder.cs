@@ -104,8 +104,6 @@ namespace HyenaQuest
             foreach (string asset in allAssets.ToArray()) {
                 foreach (string dep in AssetDatabase.GetDependencies(asset, true)) {
                     if (dep.EndsWith(".cs")) continue;
-                    if (dep.StartsWith("Packages/com.unity.")) continue; // skip Unity built-in packages
-                    
                     allAssets.Add(dep);
                 }
             }
