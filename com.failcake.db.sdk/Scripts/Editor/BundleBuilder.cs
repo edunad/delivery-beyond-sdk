@@ -104,6 +104,7 @@ namespace HyenaQuest
             foreach (string asset in allAssets.ToArray()) {
                 foreach (string dep in AssetDatabase.GetDependencies(asset, true)) {
                     if (dep.EndsWith(".cs")) continue;
+                    if (!dep.StartsWith("Assets/") && !dep.StartsWith("Packages/")) continue;
                     allAssets.Add(dep);
                 }
             }
