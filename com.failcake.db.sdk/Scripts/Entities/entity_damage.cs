@@ -40,7 +40,7 @@ namespace HyenaQuest
 
         #region PRIVATE
         private void Damage(Collider col) {
-            if (!this.gameObject.activeInHierarchy) return;
+            if (!this || !this.gameObject.activeInHierarchy || !col || !col.gameObject) return;
             if (col.transform.IsChildOf(this.transform) || col.gameObject == this.gameObject) return;
 
             SDK.OnDamageRequest?.Invoke(this.damageType, this.damage, this.damageCooldown, this.damageOnMove, col);

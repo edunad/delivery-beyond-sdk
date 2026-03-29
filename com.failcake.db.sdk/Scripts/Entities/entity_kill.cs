@@ -33,9 +33,9 @@ namespace HyenaQuest
         #region PRIVATE
 
         private void Kill(Collider col) {
-            if (!this.gameObject.activeInHierarchy || !col || !col.gameObject) return;
+            if (!this || !this.gameObject.activeInHierarchy || !col || !col.gameObject) return;
             if (col.transform.IsChildOf(this.transform) || col.gameObject == this.gameObject) return;
-            
+
             SDK.OnKillRequest?.Invoke(this.damageType, col);
         }
 
