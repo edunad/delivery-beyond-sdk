@@ -31,8 +31,9 @@ namespace HyenaQuest
         [LayoutStart("Settings/Achievement", ELayout.Background | ELayout.TitleOut)]
         public STEAM_ACHIEVEMENTS achievement;
 
-        [LayoutStart("Settings/Rendering", ELayout.Background | ELayout.TitleOut), ShowIf(nameof(PlayerAccessory.__CAN_HIDE_GOOGLES__))]
+        [LayoutStart("Settings/Rendering", ELayout.Background | ELayout.TitleOut)]
         #if UNITY_EDITOR
+        [ShowIf(nameof(PlayerAccessory.__CAN_HIDE_GOOGLES__))]
         #endif
         public bool hideGoogles;
 
