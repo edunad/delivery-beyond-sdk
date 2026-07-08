@@ -1,7 +1,7 @@
 {
   "name": "com.failcake.db.sdk",
   "displayName": "Delivery & Beyond SDK",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "unity": "6000.0",
   "description": "Game SDK",
   "type": "library",
@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "com.failcake.vis.occlusion": "1.0.0",
-    "com.failcake.vmf.importer": "1.0.0",
+    "com.failcake.vmf.importer": "1.0.2",
     "com.failcake.timers": "0.0.1"
   },
-  "_fingerprint": "bd19f357f051a4c705e2e330e7c0ab36e53bd58d"
+  "_fingerprint": "0a9c89a4feb4cc37b395f7019fdb5032843c0461"
 }

@@ -28,6 +28,11 @@ namespace HyenaQuest
             (BuildTarget.StandaloneLinux64, "linux")
         };
 
+        [MenuItem("HyenaQuest SDK/Maps/Build Selected Map", true)]
+        private static bool BuildSelectedMapValidation() {
+            return Selection.activeObject is WorldSettings;
+        }
+
         [MenuItem("HyenaQuest SDK/Maps/Build Selected Map")]
         public static void BuildSelectedMap() {
             WorldSettings selected = Selection.activeObject as WorldSettings;
@@ -48,25 +53,96 @@ namespace HyenaQuest
 
             BundleBuilder.BuildBundles(contentBuilds, shaderBuilds);
 
-            Dictionary<string, WorldSettings> settingsMap = new Dictionary<string, WorldSettings> {
-                [content.Value.assetBundleName] = selected
-            };
+            string mapTitle = selected ? selected.name : Path.GetFileNameWithoutExtension(content.Value.assetBundleName);
+            if (content.Value.assetBundleName != null)
+            {
+                Dictionary<string, ModMeta> metaMap = new Dictionary<string, ModMeta> {
+                    [content.Value.assetBundleName] = new ModMeta {
+                        title = mapTitle,
+                        description = $"Custom map: {mapTitle}",
+                        type = "SHARED",
+                        tags = new[] { "MAP" },
+                        preview = null
+                    }
+                };
 
-            BundleBuilder.OrganizeAndCleanup(contentBuilds, shaderBuilds, settingsMap);
+                BundleBuilder.OrganizeAndCleanup(contentBuilds, shaderBuilds, metaMap);
+            }
 
             string mapName = Path.GetFileNameWithoutExtension(content.Value.assetBundleName);
 
             Debug.Log($"[MapBuilder] Built: {mapName} for {BundleBuilder.PLATFORMS.Length} platform(s)");
-            EditorUtility.RevealInFinder(Path.Combine(BundleBuilder.OUTPUT_FOLDER, mapName));
+            if (mapName != null) EditorUtility.RevealInFinder(Path.Combine(BundleBuilder.OUTPUT_FOLDER, mapName));
         }
 
-        [MenuItem("HyenaQuest SDK/Maps/Build Selected Map", true)]
-        private static bool BuildSelectedMapValidation() {
-            return Selection.activeObject is WorldSettings;
+        [MenuItem("HyenaQuest SDK/Accessories/Build Selected Accessory", true)]
+        private static bool BuildSelectedAccessoryValidation() {
+            return Selection.activeObject is PlayerAccessory;
+        }
+
+        [MenuItem("HyenaQuest SDK/Accessories/Build Selected Accessory")]
+        public static void BuildSelectedAccessory() {
+            PlayerAccessory selected = Selection.activeObject as PlayerAccessory;
+            if (!selected)
+            {
+                EditorUtility.DisplayDialog("Accessory Builder", "Select a PlayerAccessory asset first.", "OK");
+                return;
+            }
+
+            if (!selected.obj || !selected.preview)
+            {
+                EditorUtility.DisplayDialog("Accessory Builder", "Accessory must have both a Model (obj) and a Preview sprite assigned before building.", "OK");
+                return;
+            }
+
+            string assetPath = AssetDatabase.GetAssetPath(selected);
+            string bundleName = Path.GetFileNameWithoutExtension(assetPath).ToLowerInvariant();
+
+            (string[] contentAssets, string[] shaderAssets) = BundleBuilder.CollectAssetWithDependencies(assetPath);
+
+            AssetBundleBuild contentBuild = new AssetBundleBuild {
+                assetBundleName = $"{bundleName}.bundle",
+                assetNames = contentAssets
+            };
+
+            List<AssetBundleBuild> contentBuilds = new List<AssetBundleBuild> { contentBuild };
+            List<AssetBundleBuild> shaderBuilds = new List<AssetBundleBuild>();
+            if (shaderAssets.Length > 0)
+                shaderBuilds.Add(new AssetBundleBuild {
+                    assetBundleName = $"{bundleName}_shaders.bundle",
+                    assetNames = shaderAssets
+                });
+
+            BundleBuilder.BuildBundles(contentBuilds, shaderBuilds);
+
+            string title = selected.name;
+            Dictionary<string, ModMeta> metaMap = new Dictionary<string, ModMeta> {
+                [contentBuild.assetBundleName] = new ModMeta {
+                    title = title,
+                    description = $"Custom accessory: {title}",
+                    type = "CLIENT",
+                    tags = new[] { "ACCESSORY" },
+                    preview = selected.preview
+                }
+            };
+
+            BundleBuilder.OrganizeAndCleanup(contentBuilds, shaderBuilds, metaMap);
+
+            Debug.Log($"[AccessoryBuilder] Built: {bundleName} for {BundleBuilder.PLATFORMS.Length} platform(s)");
+            EditorUtility.RevealInFinder(Path.Combine(BundleBuilder.OUTPUT_FOLDER, bundleName));
         }
 
         #region PRIVATE
-        
+
+        private struct ModMeta
+        {
+            public string title;
+            public string description;
+            public string type;
+            public string[] tags;
+            public Sprite preview;
+        }
+
         private static (AssetBundleBuild? content, AssetBundleBuild? shaders) CreateBuildsForPath(string settingsPath) {
             WorldSettings settings = AssetDatabase.LoadAssetAtPath<WorldSettings>(settingsPath);
             if (!settings) return (null, null);
@@ -74,8 +150,8 @@ namespace HyenaQuest
             string mapFolder = Path.GetDirectoryName(settingsPath)!.Replace("\\", "/");
             string bundleName = Path.GetFileName(mapFolder).ToLowerInvariant();
 
-            (string[] contentAssets, string[] shaderAssets) = CollectFolderAssets(mapFolder);
-            
+            (string[] contentAssets, string[] shaderAssets) = BundleBuilder.CollectFolderAssets(mapFolder);
+
             AssetBundleBuild contentBuild = new AssetBundleBuild {
                 assetBundleName = $"{bundleName}.bundle",
                 assetNames = contentAssets
@@ -94,28 +170,59 @@ namespace HyenaQuest
         private static (string[] content, string[] shaders) CollectFolderAssets(string folderPath) {
             HashSet<string> allAssets = new HashSet<string>();
             string[] guids = AssetDatabase.FindAssets("", new[] { folderPath });
-            
-            foreach (string guid in guids) {
+
+            foreach (string guid in guids)
+            {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (AssetDatabase.IsValidFolder(path) || path.EndsWith(".cs")) continue;
                 allAssets.Add(path);
             }
 
-            foreach (string asset in allAssets.ToArray()) {
-                foreach (string dep in AssetDatabase.GetDependencies(asset, true)) {
+            foreach (string asset in allAssets.ToArray())
+            {
+                foreach (string dep in AssetDatabase.GetDependencies(asset, true))
+                {
                     if (dep.EndsWith(".cs")) continue;
-                    if (dep.StartsWith("Assets/")) { allAssets.Add(dep); continue; }
-                    if (dep.StartsWith("Packages/") && BundleBuilder.IsShaderAsset(dep)) { allAssets.Add(dep); continue; }
+                    if (dep.StartsWith("Assets/"))
+                    {
+                        allAssets.Add(dep);
+                        continue;
+                    }
+
+                    if (dep.StartsWith("Packages/") && BundleBuilder.IsShaderAsset(dep)) allAssets.Add(dep);
                 }
             }
 
+            return BundleBuilder.SplitContentShaders(allAssets);
+        }
+
+        private static (string[] content, string[] shaders) CollectAssetWithDependencies(string assetPath) {
+            HashSet<string> allAssets = new HashSet<string> { assetPath };
+
+            foreach (string dep in AssetDatabase.GetDependencies(assetPath, true))
+            {
+                if (dep.EndsWith(".cs")) continue;
+                if (dep.StartsWith("Assets/"))
+                {
+                    allAssets.Add(dep);
+                    continue;
+                }
+
+                if (dep.StartsWith("Packages/") && BundleBuilder.IsShaderAsset(dep)) allAssets.Add(dep);
+            }
+
+            return BundleBuilder.SplitContentShaders(allAssets);
+        }
+
+        private static (string[] content, string[] shaders) SplitContentShaders(HashSet<string> allAssets) {
             HashSet<string> shaderSet = new HashSet<string>();
             HashSet<string> contentSet = new HashSet<string>();
 
-            foreach (string asset in allAssets) {
-                if (BundleBuilder.IsShaderAsset(asset)) shaderSet.Add(asset);
-                else contentSet.Add(asset);
-            }
+            foreach (string asset in allAssets)
+                if (BundleBuilder.IsShaderAsset(asset))
+                    shaderSet.Add(asset);
+                else
+                    contentSet.Add(asset);
 
             return (contentSet.ToArray(), shaderSet.ToArray());
         }
@@ -138,7 +245,8 @@ namespace HyenaQuest
                 foreach (string asset in sb.assetNames)
                     shaderAssetPaths.Add(asset);
 
-            foreach ((BuildTarget target, string folder) in BundleBuilder.PLATFORMS) {
+            foreach ((BuildTarget target, string folder) in BundleBuilder.PLATFORMS)
+            {
                 PlayerSettings.SetUseDefaultGraphicsAPIs(target, false);
                 PlayerSettings.SetGraphicsAPIs(target, target == BuildTarget.StandaloneLinux64
                     ? new[] { GraphicsDeviceType.Vulkan }
@@ -148,12 +256,11 @@ namespace HyenaQuest
                 EditorUserBuildSettings.SwitchActiveBuildTarget(group, target);
 
                 AssetDatabase.SaveAssets();
-                
-                foreach (string shaderPath in shaderAssetPaths)
-                    AssetDatabase.ImportAsset(shaderPath, ImportAssetOptions.ForceUpdate);
+
+                foreach (string shaderPath in shaderAssetPaths) AssetDatabase.ImportAsset(shaderPath, ImportAssetOptions.ForceUpdate);
                 AssetDatabase.Refresh();
 
-                string stagingDir = Path.Combine(OUTPUT_FOLDER, $"_staging_{folder}");
+                string stagingDir = Path.Combine(BundleBuilder.OUTPUT_FOLDER, $"_staging_{folder}");
                 if (Directory.Exists(stagingDir)) Directory.Delete(stagingDir, true);
                 Directory.CreateDirectory(stagingDir);
 
@@ -168,7 +275,7 @@ namespace HyenaQuest
             EditorUserBuildSettings.SwitchActiveBuildTarget(originalGroup, originalTarget);
         }
 
-        private static void OrganizeAndCleanup(List<AssetBundleBuild> contentBuilds, List<AssetBundleBuild> shaderBuilds, Dictionary<string, WorldSettings> settingsMap) {
+        private static void OrganizeAndCleanup(List<AssetBundleBuild> contentBuilds, List<AssetBundleBuild> shaderBuilds, Dictionary<string, ModMeta> metaMap) {
             HashSet<string> shaderBundleNames = new HashSet<string>();
             foreach (AssetBundleBuild sb in shaderBuilds) shaderBundleNames.Add(sb.assetBundleName);
 
@@ -214,10 +321,11 @@ namespace HyenaQuest
                         if (File.Exists(shaderManifest)) File.Delete(shaderManifest);
                     }
 
-                BundleBuilder.GenerateModJson(mapFolder, mapName, settingsMap.GetValueOrDefault(bundleFileName));
+                ModMeta meta = metaMap.GetValueOrDefault(bundleFileName);
+                BundleBuilder.GenerateModJson(mapFolder, mapName, meta);
 
                 string previewPath = Path.Combine(mapFolder, "preview.png");
-                if (!File.Exists(previewPath)) BundleBuilder.GeneratePreviewImage(previewPath, mapName);
+                if (!File.Exists(previewPath) && (!meta.preview || !BundleBuilder.ExportSpriteAsPng(meta.preview, previewPath))) BundleBuilder.GeneratePreviewImage(previewPath, mapName);
             }
 
             // Clean up -----------------------------
@@ -229,27 +337,74 @@ namespace HyenaQuest
             // -----------------
         }
 
-        private static void GenerateModJson(string mapFolder, string mapName, WorldSettings settings) {
-            string path = Path.Combine(mapFolder, "mod.json");
+        private static void GenerateModJson(string folder, string name, ModMeta meta) {
+            string path = Path.Combine(folder, "mod.json");
             if (File.Exists(path)) return;
-            
-            string title = settings ? settings.name : mapName;
-            string description = $"Custom map: {title}";
 
-            title = title.Replace("\\", "\\\\").Replace("\"", "\\\"");
-            description = description.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            string title = string.IsNullOrEmpty(meta.title) ? name : meta.title;
+            string description = string.IsNullOrEmpty(meta.description) ? $"Custom mod: {title}" : meta.description;
+            string type = string.IsNullOrEmpty(meta.type) ? "SHARED" : meta.type;
+            string[] tags = meta.tags is { Length: > 0 } ? meta.tags : new[] { "MAP" };
+
+            title = BundleBuilder.EscapeJson(title);
+            description = BundleBuilder.EscapeJson(description);
+            string tagsJson = string.Join(", ", tags.Select(t => $"\"{BundleBuilder.EscapeJson(t)}\""));
 
             string json = "{\n" +
                           $"    \"title\": \"{title}\",\n" +
                           $"    \"description\": \"{description}\",\n" +
-                          "    \"type\": \"SHARED\",\n" +
+                          $"    \"type\": \"{type}\",\n" +
                           "    \"author\": \"\",\n" +
                           "    \"preview\": \"./preview.png\",\n" +
-                          "    \"tags\": [\"MAP\"]\n" +
+                          $"    \"tags\": [{tagsJson}]\n" +
                           "}";
 
             File.WriteAllText(path, json);
-            Debug.Log($"[MapBuilder] Generated: {path}");
+            Debug.Log($"[ModBuilder] Generated: {path}");
+        }
+
+        private static string EscapeJson(string value) {
+            return value?.Replace("\\", "\\\\").Replace("\"", "\\\"") ?? string.Empty;
+        }
+
+        private static bool ExportSpriteAsPng(Sprite sprite, string outputPath) {
+            if (!sprite || !sprite.texture) return false;
+
+            Rect rect = sprite.rect;
+            int w = Mathf.RoundToInt(rect.width);
+            int h = Mathf.RoundToInt(rect.height);
+            if (w <= 0 || h <= 0) return false;
+
+            Texture2D src = sprite.texture;
+
+            RenderTexture rt = RenderTexture.GetTemporary(src.width, src.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            RenderTexture previous = RenderTexture.active;
+
+            Texture2D readable = null;
+            try
+            {
+                Graphics.Blit(src, rt);
+                RenderTexture.active = rt;
+
+                readable = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                readable.ReadPixels(new Rect(rect.x, rect.y, w, h), 0, 0);
+                readable.Apply();
+
+                File.WriteAllBytes(outputPath, readable.EncodeToPNG());
+                Debug.Log($"[ModBuilder] Exported preview from sprite: {outputPath}");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[ModBuilder] Failed to export sprite preview ({sprite.name}): {e.Message}");
+                return false;
+            }
+            finally
+            {
+                RenderTexture.active = previous;
+                RenderTexture.ReleaseTemporary(rt);
+                if (readable) Object.DestroyImmediate(readable);
+            }
         }
 
         private static void GeneratePreviewImage(string outputPath, string seed) {

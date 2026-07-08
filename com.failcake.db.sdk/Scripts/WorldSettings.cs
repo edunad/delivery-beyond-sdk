@@ -137,7 +137,7 @@ namespace HyenaQuest
         [Range(0, 1)]
         public float density;
     }
-    
+
     [Serializable, Flags]
     public enum ContractModifiers
     {
@@ -156,7 +156,7 @@ namespace HyenaQuest
         DARKNESS_WORLD = 1 << 12
     }
 
-    [Preserve, Serializable, CreateAssetMenu(menuName = "HyenaQuest/World Settings")]
+    [Preserve, Serializable, CreateAssetMenu(menuName = "HyenaQuest SDK/World Settings")]
     public class WorldSettings : ScriptableObject
     {
         [LayoutStart("Settings", ELayout.Background | ELayout.TitleOut), Range(1, byte.MaxValue)]
@@ -237,11 +237,10 @@ namespace HyenaQuest
 
         [NoLabel]
         public List<GameObject> deadEnds;
-        
-        [LayoutStart("Networking", ELayout.Background | ELayout.TitleOut)]
-        [InfoBox("Make sure to add any extra networked objects here (aka objects that have NetworkObject component), not including the ones already referenced above.")]
+
+        [LayoutStart("Networking", ELayout.Background | ELayout.TitleOut), InfoBox("Make sure to add any extra networked objects here (aka objects that have NetworkObject component), not including the ones already referenced above.")]
         public List<GameObject> extraNetworkObjects;
-        
+
         #region PRIVATE
 
         private string __CALCULATION__ {
