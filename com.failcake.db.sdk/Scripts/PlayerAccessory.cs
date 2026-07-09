@@ -19,7 +19,9 @@ namespace HyenaQuest
         CHEST,
         PANTS,
         TAIL,
-        MASK
+        MASK,
+        
+        COUNT
     }
 
     [Preserve, Serializable, CreateAssetMenu(menuName = "HyenaQuest SDK/Accessory")]
