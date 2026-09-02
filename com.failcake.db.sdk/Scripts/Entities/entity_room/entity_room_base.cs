@@ -155,7 +155,6 @@ namespace HyenaQuest
         protected DecalProjector[] _decals;
 
         protected bool _isVIS = true;
-        protected float _lightTick;
 
         #endregion
 
@@ -172,17 +171,7 @@ namespace HyenaQuest
         #endregion
 
         #endregion
-        
-        public void Update() {
-            if (!SDK.MainCamera) return;
-
-            if (Time.time < this._lightTick || this._lights == null) return;
-            this._lightTick = Time.time + 0.2F;
-
-            foreach (Light l in this._lights)
-                if (l)
-                    l.gameObject.SetActive(this._isVIS || Vector3.Distance(l.transform.position, SDK.MainCamera.transform.position) <= 18);
-        }
+       
 
         public bool IsRoomVisibile() { return this._isVIS; }
         
@@ -198,18 +187,7 @@ namespace HyenaQuest
                 this._VISRoom.IsInside = point => this._BOUNDS_.Contains(point);
                 this._VISRoom.OnVisibilityChanged = active => {
                     this._isVIS = active;
-
-                    if (this._renderers != null)
-                        foreach (Renderer r in this._renderers)
-                            if (r)
-                                r.enabled = active;
-
-                    if (this._decals != null)
-                        foreach (DecalProjector d in this._decals)
-                            if (d)
-                                d.enabled = active;
-
-                    if (active) this._lightTick = Time.time; // Force light check
+                    SDK.OnRoomVISUpdate?.Invoke(this, active);
                 };
             }
             
@@ -532,11 +510,14 @@ namespace HyenaQuest
 
             // SETUP VIS ----
             this._renderers = this.GetComponentsInChildren<Renderer>(false).AsValueEnumerable().Where(r => !string.Equals(r.name, "world", StringComparison.InvariantCultureIgnoreCase) && !r.CompareTag("OCCLUDER/IGNORE")).ToArray();
-            
             this._lights = this.GetComponentsInChildren<Light>(false);
             this._decals = this.GetComponentsInChildren<DecalProjector>(false);
             // ---------------
         }
+
+        public virtual Renderer[] GetRoomRenderers() { return this._renderers; }
+        public virtual Light[] GetRoomLights() { return this._lights; }
+        public virtual DecalProjector[] GetRoomDecals() { return this._decals; }
 
         protected virtual int TextureLayerSeed() { return -1; }
 

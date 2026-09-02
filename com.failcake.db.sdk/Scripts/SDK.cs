@@ -69,6 +69,7 @@ namespace HyenaQuest
         // MapController ---
         public static Func<int> GetSeed;
         public static Action<entity_room_base> OnRoomSpawn;
+        public static Action<entity_room_base, bool> OnRoomVISUpdate;
         // ---------------------------
         
         // SoundController ---
