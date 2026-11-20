@@ -1,6 +1,5 @@
 ﻿#region
 
-using FailCake;
 using SaintsField;
 using SaintsField.Playa;
 using Unity.Netcode;
@@ -16,19 +15,17 @@ namespace HyenaQuest
         [LayoutStart("Settings", ELayout.Background | ELayout.TitleOut), Required, PlayaInfoBox("Ensure template is a NetworkBehaviour", EMessageType.Warning)]
         public GameObject template;
 
-        public bool flipTest; // TEMP FOR NOW
-        
+        public bool flipTest;
+
         #region PRIVATE
 
         protected NetworkObject _spawnedGameObject;
         private bool IsServer => NetworkManager.Singleton && NetworkManager.Singleton.IsServer;
 
-        private util_timer _flipTestTimer;
-        
         #if UNITY_EDITOR
         private MeshFilter _filter;
         private SkinnedMeshRenderer _skinnedFilter;
-        
+
         private entity_sdk_replacement _scrapSDK;
         #endif
 
@@ -41,7 +38,6 @@ namespace HyenaQuest
         public void OnDestroy() {
             if (!this.IsServer) return;
             if (this._spawnedGameObject && this._spawnedGameObject.IsSpawned) this._spawnedGameObject.Despawn();
-            this._flipTestTimer?.Stop();
         }
 
         [Server]
@@ -51,7 +47,7 @@ namespace HyenaQuest
 
             if (SDK.PreNetworkTemplateSpawn != null) this.template = SDK.PreNetworkTemplateSpawn?.Invoke(this.template);
 
-            GameObject newObj = entity_network_template_base.Instantiate(this.template, this.transform.position, this.transform.rotation);
+            GameObject newObj = Object.Instantiate(this.template, this.transform.position, this.transform.rotation);
             if (!newObj) throw new UnityException($"Failed to instantiate template {this.template.name}");
 
             SDK.PostNetworkTemplateSpawn?.Invoke(newObj);
@@ -60,14 +56,7 @@ namespace HyenaQuest
             if (this.flipTest)
             {
                 entity_room_interior test = this.GetComponentInParent<entity_room_interior>(false);
-                if (test && test.IsRoomFlipped())
-                {
-                    this._flipTestTimer?.Stop();
-                    this._flipTestTimer = util_timer.Simple(0.1F, () => {
-                        if (!newObj) return;
-                        newObj.transform.localEulerAngles = new Vector3(newObj.transform.localEulerAngles.x, 180F, newObj.transform.localEulerAngles.z);
-                    });
-                }
+                if (test && test.IsRoomFlipped()) newObj.transform.localEulerAngles = new Vector3(newObj.transform.localEulerAngles.x, newObj.transform.localEulerAngles.y + 180, newObj.transform.localEulerAngles.z);
             }
             // --------------------
 
@@ -83,7 +72,7 @@ namespace HyenaQuest
         public virtual bool CanSpawn() { return false; }
 
         #region PRIVATE
-        
+
         #if UNITY_EDITOR
         public void OnDrawGizmos() {
             if (Application.isPlaying) return;
@@ -121,7 +110,7 @@ namespace HyenaQuest
                 {
                     MeshCollider cl = preview.GetComponentInChildren<MeshCollider>(true);
                     if (!cl) return;
-                    
+
                     meshToDraw = cl.sharedMesh;
                     meshTransform = cl.transform;
                 }
@@ -136,7 +125,7 @@ namespace HyenaQuest
                     meshTransform = this._skinnedFilter.transform;
                 }
             }
-            
+
             if (!meshToDraw || !meshTransform) return;
 
             Vector3 scale = Vector3.Scale(this.transform.lossyScale, this.template.transform.lossyScale);

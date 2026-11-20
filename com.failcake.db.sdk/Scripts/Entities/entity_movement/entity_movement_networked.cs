@@ -107,6 +107,18 @@ namespace HyenaQuest
             net.SceneMigrationSynchronization = false;
             net.DontDestroyWithOwner = false;
             net.DestroyWithScene = true;
+
+            NetworkTransform tr = this._networkTransform;
+            if (!tr) this.obj.GetComponent<NetworkTransform>();
+            if (!tr) return;
+
+            tr.UseUnreliableDeltas = false;
+
+            tr.PositionInterpolationType = NetworkTransform.InterpolationTypes.Lerp;
+            tr.PositionMaxInterpolationTime = 0.25F;
+
+            tr.RotationInterpolationType = NetworkTransform.InterpolationTypes.Lerp;
+            tr.RotationMaxInterpolationTime = 0.25F;
             // -----------------
         }
         #endif

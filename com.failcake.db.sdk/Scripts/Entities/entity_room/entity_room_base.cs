@@ -6,13 +6,14 @@ using System.Linq;
 using System.Reflection;
 using FailCake.VIS;
 using FailCake.VMF;
-
 using SaintsField;
 using SaintsField.Playa;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.VFX;
 using ZLinq;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 #if UNITY_EDITOR
@@ -65,7 +66,7 @@ namespace HyenaQuest
 
         [SaintsDictionary]
         public SaintsDictionary<VMFLayer, RoomTexture> modifierTextures = new SaintsDictionary<VMFLayer, RoomTexture>();
-        
+
         [Range(0, 100)]
         public int minSpawnRounds;
 
@@ -98,12 +99,12 @@ namespace HyenaQuest
 
             // Setup mesh renderers ---
             uint decalMask = RenderingLayerMask.GetMask("RecieveDecals");
-            
+
             MeshRenderer[] meshRenderers = this.GetComponentsInChildren<MeshRenderer>(true);
             foreach (MeshRenderer meshRenderer in meshRenderers)
             {
                 if (!meshRenderer) continue;
-                
+
                 meshRenderer.staticShadowCaster = true;
                 meshRenderer.renderingLayerMask = decalMask;
             }
@@ -153,6 +154,7 @@ namespace HyenaQuest
         protected Renderer[] _renderers;
         protected Light[] _lights;
         protected DecalProjector[] _decals;
+        protected VisualEffect[] _vfxs;
 
         protected bool _isVIS = true;
 
@@ -171,16 +173,16 @@ namespace HyenaQuest
         #endregion
 
         #endregion
-       
+
 
         public bool IsRoomVisibile() { return this._isVIS; }
-        
+
         public override void OnNetworkSpawn() {
             base.OnNetworkSpawn();
-            
+
             // SETUP -----
             this._BOUNDS_ = util_bounds.GetWorldBounds(this._BOUNDS_, this.transform); // Update bounds
-            
+
             this._VISRoom = this.GetComponent<entity_vis_room>();
             if (this._VISRoom)
             {
@@ -190,14 +192,14 @@ namespace HyenaQuest
                     SDK.OnRoomVISUpdate?.Invoke(this, active);
                 };
             }
-            
+
             if (!this.IsServer) return;
             this.PickLayerData();
         }
 
         public override void OnNetworkDespawn() {
             base.OnNetworkDespawn();
-            
+
             if (!this.IsServer) return;
             this.DespawnTemplates();
         }
@@ -207,12 +209,12 @@ namespace HyenaQuest
         // https://github.com/Unity-Technologies/com.unity.netcode.gameobjects/issues/3186
         protected override void OnNetworkPostSpawn() {
             if (this.IsServer) this.InternalSpawnTemplates();
-            
+
             base.OnNetworkPostSpawn();
             if (!this.IsClient) return;
-            
-            SDK.OnRoomSpawn?.Invoke(this);  // Tell the map controller we're done spawning this room
-            
+
+            SDK.OnRoomSpawn?.Invoke(this); // Tell the map controller we're done spawning this room
+
             // HOOKS
             this._combinedLayerData.RegisterOnValueChanged((_, newValue) => {
                 if (newValue == ulong.MaxValue) return;
@@ -244,7 +246,7 @@ namespace HyenaQuest
             return this.GetComponentsInChildren<entity_room_exit>(false).AsValueEnumerable().Where(a => a is not entity_interior_exit)
                 .OrderBy(a => a.order != -1 ? a.order : int.MaxValue).ToArray(); // Cannot be cached since we remove the exits once we are done with them
         }
-        
+
         public void SetWindowColor(Color color, float outsideIntensity) {
             entity_window_light[] windows = this.GetComponentsInChildren<entity_window_light>(true);
             foreach (entity_window_light window in windows)
@@ -313,6 +315,7 @@ namespace HyenaQuest
         }
 
         #region TEMPLATES
+
         protected virtual void DespawnTemplates() {
             if (!this.IsServer) throw new UnityException("DespawnTemplates can only be called on the server");
             if (this._spawnedNetworkTemplates.Count == 0) return;
@@ -334,7 +337,7 @@ namespace HyenaQuest
             foreach (entity_network_template_chance net in netTemplates)
             {
                 if (!net.CanSpawn()) continue;
-                
+
                 (GameObject, NetworkObject) obj = net.NetworkSpawn();
                 if (!obj.Item1 || !obj.Item2)
                 {
@@ -353,11 +356,12 @@ namespace HyenaQuest
         #endregion
 
         #region NEIGHBOURHOOD
+
         public void AddAdjacentRoom(entity_room_base room) {
             if (this._adjacentRooms.Contains(room)) return;
             this._adjacentRooms.Add(room);
         }
-        
+
         public List<entity_room_base> GetAdjacentRooms() {
             return this._adjacentRooms;
         }
@@ -432,6 +436,7 @@ namespace HyenaQuest
         #endregion
 
         #region LAYER-PICKING
+
         protected virtual void PickLayerData() {
             if (!this.IsServer) throw new UnityException("PickCombinedLayerData can only be called on the server");
             byte currentRound = SDK.GetCurrentRound?.Invoke() ?? 0;
@@ -505,19 +510,21 @@ namespace HyenaQuest
                     continue;
                 }
 
-                entity_room_base.DestroyImmediate(layer.layer);
+                Object.DestroyImmediate(layer.layer);
             }
 
             // SETUP VIS ----
             this._renderers = this.GetComponentsInChildren<Renderer>(false).AsValueEnumerable().Where(r => !string.Equals(r.name, "world", StringComparison.InvariantCultureIgnoreCase) && !r.CompareTag("OCCLUDER/IGNORE")).ToArray();
             this._lights = this.GetComponentsInChildren<Light>(false);
             this._decals = this.GetComponentsInChildren<DecalProjector>(false);
+            this._vfxs = this.GetComponentsInChildren<VisualEffect>(false);
             // ---------------
         }
 
         public virtual Renderer[] GetRoomRenderers() { return this._renderers; }
         public virtual Light[] GetRoomLights() { return this._lights; }
         public virtual DecalProjector[] GetRoomDecals() { return this._decals; }
+        public virtual VisualEffect[] GetRoomVFXs() { return this._vfxs; }
 
         protected virtual int TextureLayerSeed() { return -1; }
 
@@ -560,7 +567,7 @@ namespace HyenaQuest
                         mat.HasTexture(entity_room_base.MainTexture) && mat.HasFloat(entity_room_base.Layer))
                         validMaterials.Add(mat);
             }
-            
+
             Dictionary<VMFLayer, IGrouping<VMFLayer, VMFLayerMaterial>> vmfMaterialsByLayer = vmfMaterials.AsValueEnumerable()
                 .Where(v => v)
                 .GroupBy(v => v.layer).ToDictionary(g => g.Key, g => g);
