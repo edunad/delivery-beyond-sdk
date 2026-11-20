@@ -66,7 +66,7 @@ namespace HyenaQuest
                     this._flipTestTimer = util_timer.Simple(0.1F, () => {
                         if (!newObj) return;
                         newObj.transform.localEulerAngles = new Vector3(newObj.transform.localEulerAngles.x, 180F, newObj.transform.localEulerAngles.z);
-                    })
+                    });
                 }
             }
             // --------------------
