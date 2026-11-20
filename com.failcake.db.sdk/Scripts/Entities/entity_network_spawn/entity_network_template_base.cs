@@ -1,5 +1,6 @@
 ﻿#region
 
+using FailCake;
 using SaintsField;
 using SaintsField.Playa;
 using Unity.Netcode;
@@ -22,6 +23,8 @@ namespace HyenaQuest
         protected NetworkObject _spawnedGameObject;
         private bool IsServer => NetworkManager.Singleton && NetworkManager.Singleton.IsServer;
 
+        private util_timer _flipTestTimer;
+        
         #if UNITY_EDITOR
         private MeshFilter _filter;
         private SkinnedMeshRenderer _skinnedFilter;
@@ -38,6 +41,7 @@ namespace HyenaQuest
         public void OnDestroy() {
             if (!this.IsServer) return;
             if (this._spawnedGameObject && this._spawnedGameObject.IsSpawned) this._spawnedGameObject.Despawn();
+            this._flipTestTimer?.Stop();
         }
 
         [Server]
@@ -58,7 +62,11 @@ namespace HyenaQuest
                 entity_room_interior test = this.GetComponentInParent<entity_room_interior>(false);
                 if (test && test.IsRoomFlipped())
                 {
-                    newObj.transform.localEulerAngles = new Vector3(newObj.transform.localEulerAngles.x,180F, newObj.transform.localEulerAngles.z);
+                    this._flipTestTimer?.Stop();
+                    this._flipTestTimer = util_timer.Simple(0.1F, () => {
+                        if (!newObj) return;
+                        newObj.transform.localEulerAngles = new Vector3(newObj.transform.localEulerAngles.x, 180F, newObj.transform.localEulerAngles.z);
+                    })
                 }
             }
             // --------------------
